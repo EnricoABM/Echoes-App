@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nohana.echoes_app.data.TokenStorage
 import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.network.dto.LoginRequestDTO
@@ -16,13 +17,13 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import java.io.IOException
 
-class AuthViewModel(): ViewModel() {
+class AuthViewModel(
+    private val authService: AuthService,
+    private val tokenStorage: TokenStorage
+): ViewModel() {
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Login(false))
-    var loginState = _loginState.asStateFlow()
-    val authService: AuthService = NetworkProvider
-        .getRetrofitInstance("http://192.168.15.77:8080/")
-        .create(AuthService::class.java)
+    val loginState = _loginState.asStateFlow()
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
@@ -44,9 +45,6 @@ class AuthViewModel(): ViewModel() {
             } catch (e: IOException) {
                 _loginState.update { LoginState.Error }
             }
-
-
-
         }
     }
 
@@ -57,6 +55,9 @@ class AuthViewModel(): ViewModel() {
                 val response = authService.validate2fa(
                     TwoFactorRequestDTO(email, code)
                 )
+
+                tokenStorage.setToken("${response.body()?.token}")
+
                 when (response.code()) {
                     200 -> {
                         _loginState.update { LoginState.Success("${response.body()?.token}") }
@@ -77,4 +78,15 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
+    companion object {
+        fun create(
+            baseUrl: String,
+            context: Context
+        ): AuthViewModel {
+            val retrofit = NetworkProvider.getRetrofitInstance(baseUrl)
+            val authService = retrofit.create(AuthService::class.java)
+            val tokenStorage = TokenStorage(context.applicationContext)
+            return AuthViewModel(authService, tokenStorage)
+        }
+    }
 }

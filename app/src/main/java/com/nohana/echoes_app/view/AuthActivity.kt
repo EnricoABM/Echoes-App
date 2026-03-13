@@ -8,8 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.components.TitleComponent
@@ -23,9 +25,16 @@ class AuthActivity(): ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val viewModel: AuthViewModel by viewModels()
+
 
         setContent {
+            val viewModel = remember(this@AuthActivity) {
+                AuthViewModel.create(
+                    "http://192.168.15.77:8080/",
+                    this@AuthActivity.applicationContext
+                )
+            }
+
             val state by viewModel.loginState.collectAsState()
 
             EchoesAppTheme {
@@ -43,9 +52,11 @@ class AuthActivity(): ComponentActivity() {
                         }
                         LoginState.Loading -> LoadingScreen()
                         is LoginState.Success -> {
-                            startActivity(
-                                Intent(baseContext, HomeActivity::class.java)
-                            )
+                            LaunchedEffect(Unit) {
+                                startActivity(
+                                    Intent(baseContext, HomeActivity::class.java)
+                                )
+                            }
                         }
 
                         is LoginState.TwoFactor -> {
