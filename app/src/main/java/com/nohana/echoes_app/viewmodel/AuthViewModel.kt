@@ -82,18 +82,30 @@ class AuthViewModel(
     fun validateToken() {
         viewModelScope.launch {
             val token = tokenStorage.getToken()
+            Log.d("TOKEN", token)
+            if (token.isBlank()) {
+                _loginState.update { LoginState.Login(false) }
+                return@launch
+            }
+
             _loginState.update { LoginState.Loading }
+
             try {
                 val response = authNetworkService.validateToken("Bearer $token")
-                val body = response.body()
-                if (response.isSuccessful && body?.isValid == true) {
+
+                Log.d("AUTH", "HTTP CODE = ${response.code()}")
+
+                if (response.isSuccessful) {
+                    Log.d("AUTH", "Token válido")
                     _loginState.update { LoginState.ValidToken }
                 } else {
+                    Log.d("AUTH", "Token inválido")
                     tokenStorage.setToken("")
                     _loginState.update { LoginState.Login(false) }
                 }
+
             } catch (e: IOException) {
-                Log.e("E", e.stackTrace.contentToString())
+                Log.e("AUTH", "Erro de rede", e)
                 _loginState.update { LoginState.Login(false) }
             }
 

@@ -19,8 +19,16 @@ import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.LoginScreen
 import com.nohana.echoes_app.view.screen.TwoFactorScreen
 import com.nohana.echoes_app.viewmodel.AuthViewModel
+import com.nohana.echoes_app.viewmodel.AuthViewModelFactory
 
 class AuthActivity(): ComponentActivity() {
+
+    private val viewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(
+            "http://192.168.15.77:8080/",
+            applicationContext
+        )
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,18 +36,13 @@ class AuthActivity(): ComponentActivity() {
 
 
         setContent {
-            val viewModel = remember(this@AuthActivity) {
-                AuthViewModel.create(
-                    "http://192.168.15.77:8080/",
-                    this@AuthActivity.applicationContext
-                )
-            }
+
+
+            val state by viewModel.loginState.collectAsState()
 
             LaunchedEffect(Unit) {
                 viewModel.validateToken()
             }
-
-            val state by viewModel.loginState.collectAsState()
 
             EchoesAppTheme {
                 Column() {
@@ -56,7 +59,7 @@ class AuthActivity(): ComponentActivity() {
                         }
                         LoginState.Loading -> LoadingScreen()
                         is LoginState.Success -> {
-                            LaunchedEffect(Unit) {
+                            LaunchedEffect(state) {
                                 startActivity(
                                     Intent(this@AuthActivity, HomeActivity::class.java)
                                 )
@@ -72,7 +75,7 @@ class AuthActivity(): ComponentActivity() {
                         }
                         LoginState.Error -> TODO()
                         LoginState.ValidToken -> {
-                            LaunchedEffect(Unit) {
+                            LaunchedEffect(state) {
                                 startActivity(
                                     Intent(this@AuthActivity, HomeActivity::class.java)
                                 )

@@ -20,5 +20,5 @@ interface AuthNetworkService {
     suspend fun validate2fa(@Body dto: TwoFactorRequestDTO): Response<TwoFactorResponseDTO>
 
     @GET("/api/auth/validate-token")
-    suspend fun validateToken(@Header("Authorization") authHeader: String): Response<ValidateTokenResponse>
+    suspend fun validateToken(@Header("Authorization") authHeader: String): Response<Unit>
 }
