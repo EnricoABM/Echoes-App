@@ -35,6 +35,10 @@ class AuthActivity(): ComponentActivity() {
                 )
             }
 
+            LaunchedEffect(Unit) {
+                viewModel.validateToken()
+            }
+
             val state by viewModel.loginState.collectAsState()
 
             EchoesAppTheme {
@@ -54,7 +58,7 @@ class AuthActivity(): ComponentActivity() {
                         is LoginState.Success -> {
                             LaunchedEffect(Unit) {
                                 startActivity(
-                                    Intent(baseContext, HomeActivity::class.java)
+                                    Intent(this@AuthActivity, HomeActivity::class.java)
                                 )
                             }
                         }
@@ -66,8 +70,14 @@ class AuthActivity(): ComponentActivity() {
                                 (state as LoginState.TwoFactor).isUnauthorized
                             )
                         }
-                        LoginState.Unauthorized -> TODO()
                         LoginState.Error -> TODO()
+                        LoginState.ValidToken -> {
+                            LaunchedEffect(Unit) {
+                                startActivity(
+                                    Intent(this@AuthActivity, HomeActivity::class.java)
+                                )
+                            }
+                        }
                     }
                 }
             }

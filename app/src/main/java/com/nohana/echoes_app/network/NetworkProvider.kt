@@ -1,5 +1,7 @@
 package com.nohana.echoes_app.network
 
+import android.content.Context
+import com.nohana.echoes_app.network.interceptor.JwtHeaderInterceptor
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -12,17 +14,21 @@ class NetworkProvider {
     companion object {
 
         // Inteceptor para mostrar log no sistema
-        private val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
 
-        // Cliente OkHttp
-        private val clientOkHttp = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .build()
+        fun getRetrofitInstance(path: String, context: Context): Retrofit {
 
-        // Instância do Retrofit
-        fun getRetrofitInstance(path: String): Retrofit {
+            val jwtInteceptor = JwtHeaderInterceptor(context)
+
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+
+            val clientOkHttp = OkHttpClient.Builder()
+                .addInterceptor(jwtInteceptor)
+                .addInterceptor(logging)
+                .build()
+
+
             return Retrofit.Builder()
                 .baseUrl(path)
                 .client(clientOkHttp)

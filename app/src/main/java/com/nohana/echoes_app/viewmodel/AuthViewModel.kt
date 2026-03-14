@@ -1,7 +1,8 @@
 package com.nohana.echoes_app.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateOf
+import android.util.Log
+import androidx.compose.ui.input.indirect.IndirectTouchEventType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.data.TokenStorage
@@ -9,16 +10,16 @@ import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.network.dto.LoginRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
-import com.nohana.echoes_app.service.AuthService
+import com.nohana.echoes_app.network.dto.ValidateTokenRequest
+import com.nohana.echoes_app.service.AuthNetworkService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
 import java.io.IOException
 
 class AuthViewModel(
-    private val authService: AuthService,
+    private val authNetworkService: AuthNetworkService,
     private val tokenStorage: TokenStorage
 ): ViewModel() {
 
@@ -30,7 +31,7 @@ class AuthViewModel(
 
             try {
                 _loginState.update { LoginState.Loading }
-                val response = authService.login(LoginRequestDTO(email, password))
+                val response = authNetworkService.login(LoginRequestDTO(email, password))
                 when (response.code()) {
                     200 -> {
                         _loginState.update { LoginState.TwoFactor(email, false) }
@@ -52,7 +53,7 @@ class AuthViewModel(
         viewModelScope.launch {
             try {
                 _loginState.update { LoginState.Loading }
-                val response = authService.validate2fa(
+                val response = authNetworkService.validate2fa(
                     TwoFactorRequestDTO(email, code)
                 )
 
@@ -78,15 +79,36 @@ class AuthViewModel(
         }
     }
 
+    fun validateToken() {
+        viewModelScope.launch {
+            val token = tokenStorage.getToken()
+            _loginState.update { LoginState.Loading }
+            try {
+                val response = authNetworkService.validateToken("Bearer $token")
+                val body = response.body()
+                if (response.isSuccessful && body?.isValid == true) {
+                    _loginState.update { LoginState.ValidToken }
+                } else {
+                    tokenStorage.setToken("")
+                    _loginState.update { LoginState.Login(false) }
+                }
+            } catch (e: IOException) {
+                Log.e("E", e.stackTrace.contentToString())
+                _loginState.update { LoginState.Login(false) }
+            }
+
+        }
+    }
+
     companion object {
         fun create(
             baseUrl: String,
             context: Context
         ): AuthViewModel {
-            val retrofit = NetworkProvider.getRetrofitInstance(baseUrl)
-            val authService = retrofit.create(AuthService::class.java)
+            val retrofit = NetworkProvider.getRetrofitInstance(baseUrl, context)
+            val authNetworkService = retrofit.create(AuthNetworkService::class.java)
             val tokenStorage = TokenStorage(context.applicationContext)
-            return AuthViewModel(authService, tokenStorage)
+            return AuthViewModel(authNetworkService, tokenStorage)
         }
     }
 }

@@ -7,5 +7,5 @@ sealed interface LoginState {
     data class TwoFactor(val email: String, val isUnauthorized: Boolean): LoginState
     object Error: LoginState
     data class Login(val isUnauthorized: Boolean): LoginState
-    object Unauthorized: LoginState
+    object ValidToken: LoginState
 }
