@@ -34,5 +34,26 @@ class NetworkProvider {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         }
+
+
+        fun getRetofitWithJwtInterceptor(path: String, context: Context): Retrofit {
+            val jwtInteceptor = JwtHeaderInterceptor(context)
+
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+
+            val clientOkHttp = OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .addInterceptor(jwtInteceptor)
+                .build()
+
+
+            return Retrofit.Builder()
+                .baseUrl(path)
+                .client(clientOkHttp)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        }
     }
 }

@@ -21,4 +21,7 @@ interface AuthNetworkService {
 
     @GET("/api/auth/validate-token")
     suspend fun validateToken(@Header("Authorization") authHeader: String): Response<Unit>
+
+    @POST("/api/auth/logout")
+    suspend fun logout(@Header("Authorization") header: String): Response<Unit>
 }

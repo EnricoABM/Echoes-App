@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.components.TitleComponent
@@ -19,7 +18,7 @@ import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.LoginScreen
 import com.nohana.echoes_app.view.screen.TwoFactorScreen
 import com.nohana.echoes_app.viewmodel.AuthViewModel
-import com.nohana.echoes_app.viewmodel.AuthViewModelFactory
+import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
 
 class AuthActivity(): ComponentActivity() {
 
@@ -33,11 +32,7 @@ class AuthActivity(): ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
-
         setContent {
-
-
             val state by viewModel.loginState.collectAsState()
 
             LaunchedEffect(Unit) {
@@ -61,7 +56,7 @@ class AuthActivity(): ComponentActivity() {
                         is LoginState.Success -> {
                             LaunchedEffect(state) {
                                 startActivity(
-                                    Intent(this@AuthActivity, HomeActivity::class.java)
+                                    Intent(this@AuthActivity, UserInfoActivity::class.java)
                                 )
                             }
                         }
@@ -77,7 +72,7 @@ class AuthActivity(): ComponentActivity() {
                         LoginState.ValidToken -> {
                             LaunchedEffect(state) {
                                 startActivity(
-                                    Intent(this@AuthActivity, HomeActivity::class.java)
+                                    Intent(this@AuthActivity, UserInfoActivity::class.java)
                                 )
                             }
                         }
