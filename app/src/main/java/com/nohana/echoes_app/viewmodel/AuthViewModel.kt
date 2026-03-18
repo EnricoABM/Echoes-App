@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.nohana.echoes_app.data.TokenStorage
 import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.network.NetworkProvider
@@ -35,20 +36,18 @@ class AuthViewModel(
             try {
                 _loginState.update { LoginState.Loading }
                 val response = authNetworkService.login(LoginRequestDTO(email, password))
-                when (response.code()) {
-                    200 -> {
-                        _loginState.update { LoginState.TwoFactor(email, false) }
-                        _authState.update { AuthState.Authenticated }
+
+
+                if (response.isSuccessful) {
+                    _loginState.update { LoginState.TwoFactor(email, false) }
+                    _authState.update { AuthState.Authenticated }
+                } else {
+                        LoginState.Login(
+                            true
+                        )
                     }
-                    400, 401, 403 -> {
-                        _loginState.update { LoginState.Login(true) }
-                        _authState.update { AuthState.Unauthenticated }
-                    }
-                    500 -> {
-                        _loginState.update { LoginState.Error }
-                        _authState.update { AuthState.Unauthenticated }
-                    }
-                }
+                    _authState.update { AuthState.Unauthenticated }
+
             } catch (e: IOException) {
                 _loginState.update { LoginState.Error }
                 _authState.update { AuthState.Unauthenticated }

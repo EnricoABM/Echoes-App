@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.components.TitleComponent
@@ -24,7 +25,7 @@ class AuthActivity(): ComponentActivity() {
 
     private val viewModel: AuthViewModel by viewModels {
         AuthViewModelFactory(
-            "http://192.168.15.77:8080/",
+            NetworkProvider.ADDRESS,
             applicationContext
         )
     }

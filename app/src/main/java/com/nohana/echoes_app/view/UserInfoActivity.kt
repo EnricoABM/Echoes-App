@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.nohana.echoes_app.MainActivity
 import com.nohana.echoes_app.data.TokenStorage
+import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.UserInfo
 import com.nohana.echoes_app.view.screen.UserInfoScreen
@@ -28,14 +29,14 @@ class UserInfoActivity(): ComponentActivity() {
 
         val authViewModel: AuthViewModel by viewModels{
             AuthViewModelFactory(
-                "http://192.168.15.77:8080/",
+                NetworkProvider.ADDRESS,
                 applicationContext
             )
         }
 
         val userViewModel: UserViewModel by viewModels{
             UserViewModelFactory(
-                "http://192.168.15.77:8080/",
+                NetworkProvider.ADDRESS,
                 applicationContext
             )
         }

@@ -13,6 +13,8 @@ class NetworkProvider {
 
     companion object {
 
+        const val ADDRESS = "http://192.168.15.77:8080/"
+
         // Inteceptor para mostrar log no sistema
 
         fun getRetrofitInstance(path: String, context: Context): Retrofit {
