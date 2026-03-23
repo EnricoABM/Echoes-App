@@ -38,6 +38,9 @@
         <activity android:name=".view.RegisterActivity">
 
         </activity>
+        <activity android:name=".view.PasswordResetActivity">
+
+        </activity>
     </application>
 
 </manifest>

@@ -5,10 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import com.nohana.echoes_app.MainActivity
 import com.nohana.echoes_app.R
@@ -37,7 +39,10 @@ class RegisterActivity: ComponentActivity() {
 
         setContent {
             val state by viewModel.state.collectAsState()
-            Column() {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 TitleComponent("Registro")
 
                 Icon(

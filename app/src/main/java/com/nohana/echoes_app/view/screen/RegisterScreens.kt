@@ -1,6 +1,7 @@
 package com.nohana.echoes_app.view.screen
 
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -38,38 +40,48 @@ fun RegisterScreen(
     var password by rememberSaveable() { mutableStateOf("") }
 
     Column(
-
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-
-        OutlinedTextField(
-            label = {Text(text = "Name")},
-            value = name,
-            onValueChange = { name = it }
-        )
-
-        OutlinedTextField(
-            label = {Text(text = "E-mail")},
-            value = email,
-            onValueChange = { email = it },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email
+        Column() {
+            OutlinedTextField(
+                label = {Text(text = "Name")},
+                value = name,
+                onValueChange = { name = it }
             )
-        )
 
-        OutlinedTextField(
-            label = {Text(text = "Senha")},
-            value = password,
-            onValueChange = { password = it },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-            visualTransformation = PasswordVisualTransformation()
-        )
+            OutlinedTextField(
+                label = {Text(text = "E-mail")},
+                value = email,
+                onValueChange = { email = it },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email
+                )
+            )
 
+            OutlinedTextField(
+                label = {Text(text = "Senha")},
+                value = password,
+                onValueChange = { password = it },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+                visualTransformation = PasswordVisualTransformation()
+            )
+        }
         Button(
-            onClick = { onRegister(name, email, password) }
+            modifier = Modifier.width(200.dp),
+            onClick = { onRegister(name, email, password) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DarkBlue,
+                contentColor = Color.White
+            )
         ) {
-            Text("Registrar")
+            Text(
+                text = "Registrar",
+                fontSize = 5.em
+            )
         }
     }
 }
@@ -82,24 +94,40 @@ fun ValidateCode(
     var code by rememberSaveable() { mutableStateOf("") }
 
     Column(
-
+        verticalArrangement = Arrangement.SpaceAround,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
     ) {
-
-        Text("E-mail enviado para \n$email")
-
-        OutlinedTextField(
-            label = {Text(text = "Code")},
-            value = code,
-            onValueChange = { code = it },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+            Text(
+                text = "E-mail enviado para \n$email",
+                textAlign = TextAlign.Center
             )
-        )
+
+            OutlinedTextField(
+                label = {Text(text = "Code")},
+                value = code,
+                onValueChange = { code = it },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                )
+            )
+        }
 
         Button(
-            onClick = { onValidate(email, code) }
+            modifier = Modifier.width(200.dp),
+            onClick = { onValidate(email, code) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DarkBlue,
+                contentColor = Color.White
+            )
         ) {
-            Text("Registrar")
+            Text(
+                text = "Registrar",
+                fontSize = 5.em
+            )
         }
     }
 }

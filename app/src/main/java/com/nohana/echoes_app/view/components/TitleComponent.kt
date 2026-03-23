@@ -24,7 +24,7 @@ fun TitleComponent(
         title = {
             Text(
                 text=text,
-                fontSize = 10.em
+                fontSize = 8.em
             )
         },
         modifier = Modifier.background(DarkBlue),
