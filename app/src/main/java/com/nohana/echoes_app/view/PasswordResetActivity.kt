@@ -27,7 +27,7 @@ class PasswordResetActivity(): ComponentActivity() {
 
         val viewModel: PasswordResetViewModel by viewModels {
             PasswordResetViewModelFactory(
-                NetworkProvider.ADDRESS,
+                NetworkProvider.getAddress(applicationContext),
                 applicationContext
             )
         }

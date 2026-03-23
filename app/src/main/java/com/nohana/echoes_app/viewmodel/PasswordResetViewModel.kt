@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.network.dto.ForgotPasswordRequestDTO
 import com.nohana.echoes_app.network.dto.ResetPasswordRequestDTO
-import com.nohana.echoes_app.service.AuthNetworkService
-import com.nohana.echoes_app.service.ResetPasswordService
+import com.nohana.echoes_app.service.PasswordNetworkService
 import com.nohana.echoes_app.view.state.ForgotPasswordState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 class PasswordResetViewModel(
-    private val resetPasswordService: ResetPasswordService
+    private val resetPasswordService: PasswordNetworkService
 ): ViewModel() {
 
     private val _state = MutableStateFlow<ForgotPasswordState>( ForgotPasswordState.Email )

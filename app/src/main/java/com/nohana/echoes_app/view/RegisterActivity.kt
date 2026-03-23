@@ -28,7 +28,7 @@ import kotlin.getValue
 class RegisterActivity: ComponentActivity() {
     private val viewModel: RegisterViewModel by viewModels {
         RegisterViewModelFactory(
-            NetworkProvider.ADDRESS,
+            NetworkProvider.getAddress(applicationContext),
             applicationContext
         )
     }

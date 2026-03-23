@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.AuthActivity
 import com.nohana.echoes_app.view.RegisterActivity
+import com.nohana.echoes_app.view.ServerConfigActivity
 import com.nohana.echoes_app.view.screen.InitialScreen
 
 
@@ -26,6 +27,11 @@ class MainActivity : ComponentActivity() {
                     onRegister = {
                         startActivity(
                             Intent(baseContext, RegisterActivity::class.java)
+                        )
+                    },
+                    onServer = {
+                        startActivity(
+                            Intent(baseContext, ServerConfigActivity::class.java)
                         )
                     }
                 )

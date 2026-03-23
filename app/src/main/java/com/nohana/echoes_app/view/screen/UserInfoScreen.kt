@@ -26,6 +26,7 @@ import com.nohana.echoes_app.R
 import com.nohana.echoes_app.model.User
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
+import com.nohana.echoes_app.view.ChangePasswordActivity
 import com.nohana.echoes_app.view.components.TitleComponent
 
 @Composable
@@ -48,7 +49,7 @@ fun UserInfoScreen(
         Button(
             onClick = {
                 context.startActivity(
-                    // Abrir tela de Resetar senha
+                    Intent(context, ChangePasswordActivity::class.java)
                 )
             },
             colors = ButtonDefaults.buttonColors(
