@@ -18,6 +18,7 @@ import com.nohana.echoes_app.view.components.TitleComponent
 import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.LoginScreen
 import com.nohana.echoes_app.view.screen.TwoFactorScreen
+import com.nohana.echoes_app.view.state.LoginState.*
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
 
@@ -25,7 +26,7 @@ class AuthActivity(): ComponentActivity() {
 
     private val viewModel: AuthViewModel by viewModels {
         AuthViewModelFactory(
-            NetworkProvider.ADDRESS,
+            NetworkProvider.getAddress(applicationContext),
             applicationContext
         )
     }
@@ -50,7 +51,7 @@ class AuthActivity(): ComponentActivity() {
                         is LoginState.Login -> {
                             LoginScreen(
                                 onLogin = viewModel::login,
-                                (state as LoginState.Login).isUnauthorized
+                                (state as LoginState.Login).error
                             )
                         }
                         LoginState.Loading -> LoadingScreen()
@@ -59,6 +60,7 @@ class AuthActivity(): ComponentActivity() {
                                 startActivity(
                                     Intent(this@AuthActivity, UserInfoActivity::class.java)
                                 )
+                                finish()
                             }
                         }
 
@@ -66,17 +68,19 @@ class AuthActivity(): ComponentActivity() {
                             TwoFactorScreen(
                                 (state as LoginState.TwoFactor).email,
                                 viewModel::sendTwoFactor,
-                                (state as LoginState.TwoFactor).isUnauthorized
+                                (state as LoginState.TwoFactor).error
                             )
                         }
-                        LoginState.Error -> TODO()
                         LoginState.ValidToken -> {
                             LaunchedEffect(state) {
                                 startActivity(
                                     Intent(this@AuthActivity, UserInfoActivity::class.java)
                                 )
+                                finish()
                             }
                         }
+
+                        is LoginState.Error -> TODO()
                     }
                 }
             }

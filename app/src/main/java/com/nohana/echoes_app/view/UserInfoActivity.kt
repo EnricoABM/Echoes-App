@@ -29,14 +29,14 @@ class UserInfoActivity(): ComponentActivity() {
 
         val authViewModel: AuthViewModel by viewModels{
             AuthViewModelFactory(
-                NetworkProvider.ADDRESS,
+                NetworkProvider.getAddress(applicationContext),
                 applicationContext
             )
         }
 
         val userViewModel: UserViewModel by viewModels{
             UserViewModelFactory(
-                NetworkProvider.ADDRESS,
+                NetworkProvider.getAddress(applicationContext),
                 applicationContext
             )
         }

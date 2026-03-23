@@ -23,7 +23,7 @@ class AuthViewModel(
     private val tokenStorage: TokenStorage
 ): ViewModel() {
 
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Login(false))
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Login() )
     val loginState = _loginState.asStateFlow()
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
@@ -37,19 +37,16 @@ class AuthViewModel(
                 _loginState.update { LoginState.Loading }
                 val response = authNetworkService.login(LoginRequestDTO(email, password))
 
-
                 if (response.isSuccessful) {
-                    _loginState.update { LoginState.TwoFactor(email, false) }
-                    _authState.update { AuthState.Authenticated }
+                    _loginState.update { LoginState.TwoFactor(email) }
+                    _authState.update { AuthState.Unauthenticated }
                 } else {
-                        LoginState.Login(
-                            true
-                        )
+                        _loginState.update { LoginState.Login(true) }
                     }
                     _authState.update { AuthState.Unauthenticated }
 
             } catch (e: IOException) {
-                _loginState.update { LoginState.Error }
+                _loginState.update { LoginState.Error() }
                 _authState.update { AuthState.Unauthenticated }
             }
         }
@@ -79,11 +76,11 @@ class AuthViewModel(
                     }
                     500 -> {
                         _authState.update { AuthState.Unauthenticated }
-                        _loginState.update { LoginState.Error }
+                        _loginState.update { LoginState.Error() }
                     }
                 }
             } catch (e: IOException) {
-                _loginState.update { LoginState.Error }
+                _loginState.update { LoginState.Error() }
                 _authState.update { AuthState.Unauthenticated }
             }
         }

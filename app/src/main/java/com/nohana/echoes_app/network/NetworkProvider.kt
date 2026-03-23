@@ -1,6 +1,7 @@
 package com.nohana.echoes_app.network
 
 import android.content.Context
+import com.nohana.echoes_app.data.ServerStorage
 import com.nohana.echoes_app.network.interceptor.JwtHeaderInterceptor
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
@@ -12,6 +13,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class NetworkProvider {
 
     companion object {
+        fun getAddress(context: Context): String {
+            return ServerStorage(context).getAddress()
+        }
 
         const val ADDRESS = "http://192.168.15.77:8080/"
 

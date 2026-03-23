@@ -1,5 +1,6 @@
 package com.nohana.echoes_app.view.screen
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.em
 import com.nohana.echoes_app.R
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
+import com.nohana.echoes_app.view.PasswordResetActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +39,7 @@ fun LoginScreen(
     onLogin: (email: String, password: String) -> Unit,
     isUnauthorized: Boolean = false
 ) {
+    val context = LocalContext.current
     Column() {
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
@@ -73,6 +78,15 @@ fun LoginScreen(
                     ),
                     isError = isUnauthorized
                 )
+                TextButton(
+                    onClick = {
+                        context.startActivity(
+                            Intent(context, PasswordResetActivity::class.java)
+                        )
+                    }
+                ) {
+                    Text("Esqueceu a Senha?")
+                }
 
                 if (isUnauthorized) {
                     Text(text = "Email/Senha Inválidos", color = Color.Red)
@@ -111,11 +125,12 @@ fun TwoFactorScreen(
     ) {
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Icon(
                 painter = painterResource(R.drawable.vet_icon),
-                contentDescription = "Icone"
+                contentDescription = "Icone",
             )
 
             Text("E-mail enviado para $email")

@@ -28,7 +28,8 @@ class RegisterViewModel(
                 val response = registerNetworkService.register(RegisterRequestDTO(
                     name,
                     email,
-                    password
+                    password,
+                    "TEACHER"
                 ))
 
                 try {
