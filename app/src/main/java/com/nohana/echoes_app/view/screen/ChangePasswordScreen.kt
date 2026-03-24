@@ -132,7 +132,7 @@ fun ChangePasswordNewScreen(
         }
 
         Button(
-            modifier = Modifier.width(200.dp),
+            modifier = Modifier.width(250.dp),
             onClick = { onChangePassword(newPassword, confirmPassword) },
             colors = ButtonDefaults.buttonColors(
                 containerColor = DarkBlue,

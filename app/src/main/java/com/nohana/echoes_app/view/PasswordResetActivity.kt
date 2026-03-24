@@ -39,37 +39,53 @@ class PasswordResetActivity(): ComponentActivity() {
                 TitleComponent("Recuperação")
 
                 when (val s = state) {
-                    is ForgotPasswordState.Email -> {
-                        ForgotPasswordEmailScreen(
-                            onSendCode = viewModel::sendCode
-                        )
-                    }
-                    is ForgotPasswordState.Code -> {
-                        ForgotPasswordCodeScreen(
-                            email = s.email,
-                            onValidateCode = { code -> viewModel.validateCode(s.email, code) }
-                        )
-                    }
-                    is ForgotPasswordState.NewPassword -> {
-                        ForgotPasswordNewPasswordScreen(
-                            onResetPassword = { newPass, confirmPass ->
-                                viewModel.resetPassword(s.email, s.code, newPass, confirmPass)
-                            }
-                        )
-                    }
+                    is ForgotPasswordState.Email -> ForgotPasswordEmailScreen(
+                        onSendCode = viewModel::sendCode
+                    )
+                    is ForgotPasswordState.EmailValidationError -> ForgotPasswordEmailScreen(
+                        onSendCode = viewModel::sendCode,
+                        emailError = s.emailError
+                    )
+                    is ForgotPasswordState.EmailError -> ForgotPasswordEmailScreen(
+                        onSendCode = viewModel::sendCode,
+                        errorMessage = s.message
+                    )
+                    is ForgotPasswordState.Code -> ForgotPasswordCodeScreen(
+                        email = s.email,
+                        onValidateCode = { code -> viewModel.validateCode(s.email, code) }
+                    )
+                    is ForgotPasswordState.CodeValidationError -> ForgotPasswordCodeScreen(
+                        email = s.email,
+                        onValidateCode = { code -> viewModel.validateCode(s.email, code) },
+                        codeError = s.codeError
+                    )
+                    is ForgotPasswordState.CodeError -> ForgotPasswordCodeScreen(
+                        email = s.email,
+                        onValidateCode = { code -> viewModel.validateCode(s.email, code) },
+                        errorMessage = s.message
+                    )
+                    is ForgotPasswordState.NewPassword -> ForgotPasswordNewPasswordScreen(
+                        onResetPassword = { newPass, confirmPass ->
+                            viewModel.resetPassword(s.email, s.code, newPass, confirmPass)
+                        }
+                    )
+                    is ForgotPasswordState.NewPasswordValidationError -> ForgotPasswordNewPasswordScreen(
+                        onResetPassword = { newPass, confirmPass ->
+                            viewModel.resetPassword(s.email, s.code, newPass, confirmPass)
+                        },
+                        newPasswordError = s.newPasswordError,
+                        confirmPasswordError = s.confirmPasswordError
+                    )
+                    is ForgotPasswordState.NewPasswordError -> ForgotPasswordNewPasswordScreen(
+                        onResetPassword = { newPass, confirmPass ->
+                            viewModel.resetPassword(s.email, s.code, newPass, confirmPass)
+                        },
+                        errorMessage = s.message
+                    )
                     is ForgotPasswordState.Loading -> LoadingScreen()
-                    is ForgotPasswordState.Success -> {
-                        LaunchedEffect(Unit) { finish() }
-                    }
-                    is ForgotPasswordState.Error -> {
-                        ForgotPasswordEmailScreen(
-                            onSendCode = viewModel::sendCode,
-                            errorMessage = s.message
-                        )
-                    }
+                    is ForgotPasswordState.Success -> LaunchedEffect(Unit) { finish() }
                 }
             }
-
 
         }
     }

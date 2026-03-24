@@ -120,7 +120,7 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Entrar",
-                fontSize = 6.em
+                fontSize = 4.em
             )
         }
     }
@@ -184,7 +184,7 @@ fun TwoFactorScreen(
         ) {
             Text(
                 text = "Entrar",
-                fontSize = 6.em
+                fontSize = 4.em
             )
         }
     }

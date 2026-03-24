@@ -3,13 +3,16 @@ package com.nohana.echoes_app.view.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,43 +36,73 @@ import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 
 @Composable
 fun RegisterScreen(
-    onRegister: (String, String, String) -> Unit
+    onRegister: (String, String, String) -> Unit,
+    nameError: String? = null,
+    emailError: String? = null,
+    passwordError: String? = null,
+    errorMessage: String? = null
 ) {
-    var name by rememberSaveable() { mutableStateOf("") }
-    var email by rememberSaveable() { mutableStateOf("") }
-    var password by rememberSaveable() { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Column() {
-            OutlinedTextField(
-                label = {Text(text = "Name")},
-                value = name,
-                onValueChange = { name = it }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+            Icon(
+                painter = painterResource(R.drawable.vet_icon),
+                contentDescription = "Icone"
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedTextField(
-                label = {Text(text = "E-mail")},
+                label = { Text("Nome") },
+                value = name,
+                onValueChange = { name = it },
+                isError = nameError != null,
+                supportingText = if (nameError != null) {
+                    { Text(nameError, color = MaterialTheme.colorScheme.error) }
+                } else null
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            OutlinedTextField(
+                label = { Text("E-mail") },
                 value = email,
                 onValueChange = { email = it },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email
-                )
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                isError = emailError != null || errorMessage != null,
+                supportingText = if (emailError != null) {
+                    { Text(emailError, color = MaterialTheme.colorScheme.error) }
+                } else null
             )
 
+            Spacer(modifier = Modifier.height(6.dp))
+
             OutlinedTextField(
-                label = {Text(text = "Senha")},
+                label = { Text("Senha") },
                 value = password,
                 onValueChange = { password = it },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password
-                ),
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                isError = passwordError != null || errorMessage != null,
+                supportingText = if (passwordError != null) {
+                    { Text(passwordError, color = MaterialTheme.colorScheme.error) }
+                } else null
             )
+
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+            }
         }
+
         Button(
             modifier = Modifier.width(200.dp),
             onClick = { onRegister(name, email, password) },
@@ -78,10 +111,7 @@ fun RegisterScreen(
                 contentColor = Color.White
             )
         ) {
-            Text(
-                text = "Registrar",
-                fontSize = 5.em
-            )
+            Text(text = "Registrar", fontSize = 5.em)
         }
     }
 }
@@ -89,31 +119,49 @@ fun RegisterScreen(
 @Composable
 fun ValidateCode(
     email: String,
-    onValidate: (String, String) -> Unit
+    onValidate: (String, String) -> Unit,
+    codeError: String? = null,
+    errorMessage: String? = null
 ) {
-    var code by rememberSaveable() { mutableStateOf("") }
+    var code by rememberSaveable { mutableStateOf("") }
 
     Column(
-        verticalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+            Icon(
+                painter = painterResource(R.drawable.vet_icon),
+                contentDescription = "Icone"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = "E-mail enviado para \n$email",
+                text = "E-mail enviado para\n$email",
                 textAlign = TextAlign.Center
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedTextField(
-                label = {Text(text = "Code")},
+                label = { Text("Código") },
                 value = code,
-                onValueChange = { code = it },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
-                )
+                onValueChange = { if (it.length <= 6) code = it },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                placeholder = { Text("Digite o código de 6 dígitos") },
+                isError = codeError != null || errorMessage != null,
+                supportingText = if (codeError != null) {
+                    { Text(codeError, color = MaterialTheme.colorScheme.error) }
+                } else null
             )
+
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+            }
         }
 
         Button(
@@ -124,10 +172,7 @@ fun ValidateCode(
                 contentColor = Color.White
             )
         ) {
-            Text(
-                text = "Registrar",
-                fontSize = 5.em
-            )
+            Text(text = "Verificar", fontSize = 5.em)
         }
     }
 }

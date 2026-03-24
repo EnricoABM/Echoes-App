@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,13 +20,12 @@ import com.nohana.echoes_app.view.components.TitleComponent
 import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.RegisterScreen
 import com.nohana.echoes_app.view.screen.ValidateCode
-import com.nohana.echoes_app.view.state.RegisterState
 import com.nohana.echoes_app.viewmodel.RegisterViewModel
 import com.nohana.echoes_app.viewmodel.factory.RegisterViewModelFactory
 import kotlin.getValue
 
 
-class RegisterActivity: ComponentActivity() {
+class RegisterActivity : ComponentActivity() {
     private val viewModel: RegisterViewModel by viewModels {
         RegisterViewModelFactory(
             NetworkProvider.getAddress(applicationContext),
@@ -38,28 +38,46 @@ class RegisterActivity: ComponentActivity() {
 
         setContent {
             val state by viewModel.state.collectAsState()
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+
+            Column {
                 TitleComponent("Registro")
 
-                Icon(
-                    painterResource(R.drawable.vet_icon),
-                    contentDescription = "Icone"
-                )
-
-                when(state) {
+                when (val s = state) {
                     RegisterState.Loading -> LoadingScreen()
-                    RegisterState.Register -> RegisterScreen(viewModel::register)
+
+                    RegisterState.Register -> RegisterScreen(
+                        onRegister = viewModel::register
+                    )
+                    is RegisterState.RegisterValidationError -> RegisterScreen(
+                        onRegister = viewModel::register,
+                        nameError = s.nameError,
+                        emailError = s.emailError,
+                        passwordError = s.passwordError
+                    )
+                    is RegisterState.RegisterError -> RegisterScreen(
+                        onRegister = viewModel::register,
+                        errorMessage = s.message
+                    )
+
                     is RegisterState.ValidEmail -> ValidateCode(
+                        email = s.email,
+                        onValidate = viewModel::validateCode
+                    )
+                    is RegisterState.CodeValidationError -> ValidateCode(
+                        email = s.email,
                         onValidate = viewModel::validateCode,
-                        email = (state as RegisterState.ValidEmail).email
+                        codeError = s.codeError
                     )
-                    RegisterState.Success -> startActivity(
-                        Intent(this@RegisterActivity, MainActivity::class.java)
+                    is RegisterState.CodeError -> ValidateCode(
+                        email = s.email,
+                        onValidate = viewModel::validateCode,
+                        errorMessage = s.message
                     )
-                    RegisterState.Error -> TODO()
+
+                    RegisterState.Success -> LaunchedEffect(Unit) {
+                        startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
+                        finish()
+                    }
                 }
             }
         }

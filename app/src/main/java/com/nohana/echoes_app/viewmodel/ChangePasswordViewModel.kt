@@ -98,9 +98,10 @@ class ChangePasswordViewModel(
                         confirmPassword = confirmPassword
                     )
                 )
+
                 when (response.code()) {
                     200  -> _state.update { ChangePasswordState.Success }
-                    400  -> _state.update { ChangePasswordState.Error("Token inválido ou expirado") }
+                    400  -> _state.update { ChangePasswordState.Error("${response.errorBody()?.string()}") }
                     401  -> _state.update { ChangePasswordState.Error("Não autorizado") }
                     else -> _state.update { ChangePasswordState.Error("Erro inesperado") }
                 }
