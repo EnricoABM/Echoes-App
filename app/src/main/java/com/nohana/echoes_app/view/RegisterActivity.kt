@@ -36,7 +36,6 @@ class RegisterActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
             val state by viewModel.state.collectAsState()
             Column(

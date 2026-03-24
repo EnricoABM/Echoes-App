@@ -4,13 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.nohana.echoes_app.data.TokenStorage
 import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.network.dto.LoginRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
-import com.nohana.echoes_app.service.AuthNetworkService
+import com.nohana.echoes_app.service.network.AuthNetworkService
+import com.nohana.echoes_app.service.validation.FieldValidatorService
 import com.nohana.echoes_app.view.state.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +23,7 @@ class AuthViewModel(
     private val tokenStorage: TokenStorage
 ): ViewModel() {
 
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Login() )
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Login )
     val loginState = _loginState.asStateFlow()
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
@@ -31,6 +31,18 @@ class AuthViewModel(
 
 
     fun login(email: String, password: String) {
+        val emailError = FieldValidatorService.validateEmail(email)
+        val passwordError = FieldValidatorService.validatePassword(password)
+
+        if (emailError != null || passwordError != null) {
+            _loginState.update {
+                LoginState.ValidationError(
+                    emailError = emailError?.message,
+                    passwordError = passwordError?.message
+                )
+            }
+            return
+        }
         viewModelScope.launch {
 
             try {
@@ -41,18 +53,24 @@ class AuthViewModel(
                     _loginState.update { LoginState.TwoFactor(email) }
                     _authState.update { AuthState.Unauthenticated }
                 } else {
-                        _loginState.update { LoginState.Login(true) }
-                    }
+                    _loginState.update { LoginState.Error("Credenciais inválidas") }
                     _authState.update { AuthState.Unauthenticated }
+                }
 
             } catch (e: IOException) {
-                _loginState.update { LoginState.Error() }
+                _loginState.update { LoginState.Error("Erro de conexão") }
                 _authState.update { AuthState.Unauthenticated }
             }
         }
     }
 
     fun sendTwoFactor(email: String, code: String) {
+        val codeError = FieldValidatorService.validateCode(code)
+        if (codeError != null) {
+            _loginState.update { LoginState.TwoFactor(email, codeError.message) }
+            return
+        }
+
         viewModelScope.launch {
             try {
                 _loginState.update { LoginState.Loading }
@@ -70,17 +88,17 @@ class AuthViewModel(
                     400, 401, 403 -> {
                         _loginState.update { LoginState.TwoFactor(
                             email,
-                            true
+                            "Código Inválido"
                         ) }
                         _authState.update { AuthState.Unauthenticated }
                     }
                     500 -> {
                         _authState.update { AuthState.Unauthenticated }
-                        _loginState.update { LoginState.Error() }
+                        _loginState.update { LoginState.Error("Erro Inesperado") }
                     }
                 }
             } catch (e: IOException) {
-                _loginState.update { LoginState.Error() }
+                _loginState.update { LoginState.Error("Erro de Conexão") }
                 _authState.update { AuthState.Unauthenticated }
             }
         }
@@ -92,7 +110,7 @@ class AuthViewModel(
             Log.d("TOKEN", token)
 
             if (token.isBlank()) {
-                _loginState.update { LoginState.Login(false) }
+                _loginState.update { LoginState.Login }
                 return@launch
             }
 
@@ -101,22 +119,17 @@ class AuthViewModel(
             try {
                 val response = authNetworkService.validateToken("Bearer $token")
 
-                Log.d("AUTH", "HTTP CODE = ${response.code()}")
-
                 if (response.isSuccessful) {
-                    Log.d("AUTH", "Token válido")
                     _loginState.update { LoginState.ValidToken }
                     _authState.update { AuthState.Authenticated }
                 } else {
-                    Log.d("AUTH", "Token inválido")
                     tokenStorage.setToken("")
-                    _loginState.update { LoginState.Login(false) }
+                    _loginState.update { LoginState.Login }
                     _authState.update { AuthState.Unauthenticated }
                 }
 
             } catch (e: IOException) {
-                Log.e("AUTH", "Erro de rede", e)
-                _loginState.update { LoginState.Login(false) }
+                _loginState.update { LoginState.Error("Erro de Conexão") }
                 _authState.update { AuthState.Unauthenticated }
             }
 

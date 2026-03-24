@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.nohana.echoes_app.network.NetworkProvider
-import com.nohana.echoes_app.service.RegisterNetworkService
+import com.nohana.echoes_app.service.network.RegisterNetworkService
 import com.nohana.echoes_app.viewmodel.RegisterViewModel
 
 class RegisterViewModelFactory(

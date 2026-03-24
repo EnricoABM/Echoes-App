@@ -3,7 +3,7 @@ package com.nohana.echoes_app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.model.User
-import com.nohana.echoes_app.service.UserNetworkService
+import com.nohana.echoes_app.service.network.UserNetworkService
 import com.nohana.echoes_app.view.state.UserInfoState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

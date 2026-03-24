@@ -1,13 +1,12 @@
 package com.nohana.echoes_app.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.data.TokenStorage
-import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.network.dto.ChangePasswordRequestDTO
 import com.nohana.echoes_app.network.dto.ValidatePasswordRequestDTO
-import com.nohana.echoes_app.service.PasswordNetworkService
+import com.nohana.echoes_app.service.network.PasswordNetworkService
+import com.nohana.echoes_app.service.validation.FieldValidatorService
 import com.nohana.echoes_app.view.state.ChangePasswordState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +22,17 @@ class ChangePasswordViewModel(
     private val _state = MutableStateFlow<ChangePasswordState>(ChangePasswordState.CurrentPassword)
     val state = _state.asStateFlow()
     fun validateCurrentPassword(currentPassword: String) {
+        val passwordError = FieldValidatorService.validatePassword(currentPassword)
+
+        if (passwordError != null) {
+            _state.update {
+                ChangePasswordState.CurrentPasswordValidationError(
+                    passwordError = passwordError.message
+                )
+            }
+            return
+        }
+
         viewModelScope.launch {
             try {
                 _state.update { ChangePasswordState.Loading }
@@ -50,8 +60,28 @@ class ChangePasswordViewModel(
     }
 
     fun changePassword(newPassword: String, confirmPassword: String) {
-        val current = _state.value as? ChangePasswordState.NewPassword ?: return
+        // Verificação de Estado
+        val current = (_state.value as? ChangePasswordState.NewPassword)
+            ?: (_state.value as? ChangePasswordState.NewPasswordValidationError)
+                ?.let { ChangePasswordState.NewPassword(it.token) }
+            ?: return
 
+        // Tratamento de Campos
+        val newPasswordError = FieldValidatorService.validatePassword(newPassword)
+        val confirmPasswordError = FieldValidatorService.validatePasswordConfirmation(newPassword, confirmPassword)
+
+        if (newPasswordError != null || confirmPasswordError != null) {
+            _state.update {
+                ChangePasswordState.NewPasswordValidationError(
+                    token = current.token,
+                    newPasswordError = newPasswordError?.message,
+                    confirmPasswordError = confirmPasswordError?.message
+                )
+            }
+            return
+        }
+
+        // Execução Principal
         viewModelScope.launch {
             try {
                 if (newPassword != confirmPassword) {

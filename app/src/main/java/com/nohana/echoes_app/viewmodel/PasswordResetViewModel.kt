@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.network.dto.ForgotPasswordRequestDTO
 import com.nohana.echoes_app.network.dto.ResetPasswordRequestDTO
-import com.nohana.echoes_app.service.PasswordNetworkService
+import com.nohana.echoes_app.service.network.PasswordNetworkService
 import com.nohana.echoes_app.view.state.ForgotPasswordState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

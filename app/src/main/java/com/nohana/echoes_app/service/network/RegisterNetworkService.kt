@@ -1,8 +1,7 @@
-package com.nohana.echoes_app.service
+package com.nohana.echoes_app.service.network
 
 import com.nohana.echoes_app.network.dto.RegisterRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 

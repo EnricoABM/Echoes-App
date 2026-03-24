@@ -1,4 +1,4 @@
-package com.nohana.echoes_app.service
+package com.nohana.echoes_app.service.network
 
 import com.nohana.echoes_app.network.dto.ChangePasswordRequestDTO
 import com.nohana.echoes_app.network.dto.ForgotPasswordRequestDTO

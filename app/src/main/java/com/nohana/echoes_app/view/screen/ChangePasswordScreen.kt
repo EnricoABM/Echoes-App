@@ -19,7 +19,8 @@ import com.nohana.echoes_app.ui.theme.DarkBlue
 @Composable
 fun ChangePasswordCurrentScreen(
     onValidate: (currentPassword: String) -> Unit,
-    errorMessage: String = ""
+    errorMessage: String = "",
+    passwordError: String? = null
 ) {
     var currentPassword by rememberSaveable { mutableStateOf("") }
 
@@ -47,7 +48,10 @@ fun ChangePasswordCurrentScreen(
                 onValueChange = { currentPassword = it },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError = errorMessage.isNotBlank()
+                isError = errorMessage.isNotBlank() || passwordError != null,
+                supportingText = if (passwordError != null) {
+                    { Text(text = passwordError, color = MaterialTheme.colorScheme.error) }
+                } else null
             )
 
             if (errorMessage.isNotBlank()) {
@@ -71,7 +75,9 @@ fun ChangePasswordCurrentScreen(
 @Composable
 fun ChangePasswordNewScreen(
     onChangePassword: (newPassword: String, confirmPassword: String) -> Unit,
-    errorMessage: String = ""
+    errorMessage: String = "",
+    newPasswordError: String? = null,
+    confirmPasswordError: String? = null
 ) {
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -100,7 +106,10 @@ fun ChangePasswordNewScreen(
                 onValueChange = { newPassword = it },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError = errorMessage.isNotBlank()
+                isError = errorMessage.isNotBlank() || newPasswordError != null,
+                supportingText = if (newPasswordError != null) {
+                    { Text(newPasswordError, color = MaterialTheme.colorScheme.error) }
+                } else null
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -111,7 +120,10 @@ fun ChangePasswordNewScreen(
                 onValueChange = { confirmPassword = it },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError = errorMessage.isNotBlank()
+                isError = errorMessage.isNotBlank() || confirmPasswordError != null,
+                supportingText = if (confirmPasswordError != null) {
+                    { Text(confirmPasswordError, color = MaterialTheme.colorScheme.error) }
+                } else null
             )
 
             if (errorMessage.isNotBlank()) {

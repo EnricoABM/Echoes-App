@@ -54,12 +54,24 @@ class ChangePasswordActivity : ComponentActivity() {
                                 finish()
                             }
                         }
+                        // Erros da Conexão com o Servidor
                         is ChangePasswordState.Error -> {
                             ChangePasswordCurrentScreen(
                                 onValidate = viewModel::validateCurrentPassword,
                                 errorMessage = s.message
                             )
                         }
+                        // Erros de Validação de Campos
+                        is ChangePasswordState.CurrentPasswordValidationError -> ChangePasswordCurrentScreen(
+                            onValidate = viewModel::validateCurrentPassword,
+                            passwordError = s.passwordError
+                        )
+
+                        is ChangePasswordState.NewPasswordValidationError -> ChangePasswordNewScreen(
+                            onChangePassword = viewModel::changePassword,
+                            newPasswordError = s.newPasswordError,
+                            confirmPasswordError = s.confirmPasswordError
+                        )
                     }
                 }
             }

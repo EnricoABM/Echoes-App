@@ -1,12 +1,10 @@
 package com.nohana.echoes_app.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.network.dto.RegisterRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
-import com.nohana.echoes_app.service.RegisterNetworkService
-import com.nohana.echoes_app.view.screen.ValidateCode
+import com.nohana.echoes_app.service.network.RegisterNetworkService
 import com.nohana.echoes_app.view.state.RegisterState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

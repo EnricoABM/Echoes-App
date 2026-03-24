@@ -45,13 +45,10 @@ class AuthActivity(): ComponentActivity() {
                 Column() {
                     TitleComponent("Login")
 
-                    Log.d("STATE", state.toString())
-
-                    when(state) {
-                        is LoginState.Login -> {
+                    when(val s = state) {
+                        LoginState.Login -> {
                             LoginScreen(
-                                onLogin = viewModel::login,
-                                (state as LoginState.Login).error
+                                onLogin = viewModel::login
                             )
                         }
                         LoginState.Loading -> LoadingScreen()
@@ -66,9 +63,9 @@ class AuthActivity(): ComponentActivity() {
 
                         is LoginState.TwoFactor -> {
                             TwoFactorScreen(
-                                (state as LoginState.TwoFactor).email,
+                                s.email,
                                 viewModel::sendTwoFactor,
-                                (state as LoginState.TwoFactor).error
+                                s.error
                             )
                         }
                         LoginState.ValidToken -> {
@@ -80,7 +77,16 @@ class AuthActivity(): ComponentActivity() {
                             }
                         }
 
-                        is LoginState.Error -> TODO()
+                        is LoginState.Error -> LoginScreen(
+                            onLogin = viewModel::login,
+                            s.error
+                        )
+
+                        is LoginState.ValidationError -> LoginScreen(
+                            onLogin = viewModel::login,
+                            emailError = s.emailError,
+                            passwordError = s.passwordError
+                        )
                     }
                 }
             }

@@ -1,10 +1,8 @@
-package com.nohana.echoes_app.service
+package com.nohana.echoes_app.service.network
 
 import com.nohana.echoes_app.network.dto.LoginRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorResponseDTO
-import com.nohana.echoes_app.network.dto.ValidateTokenRequest
-import com.nohana.echoes_app.network.dto.ValidateTokenResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
