@@ -41,7 +41,7 @@ class RegisterViewModel(
             _state.update { RegisterState.Loading }
             try {
                 val response = registerNetworkService.register(
-                    RegisterRequestDTO(name, email, password, "TEACHER")
+                    RegisterRequestDTO(name, email, password)
                 )
                 if (response.isSuccessful) {
                     _state.update { RegisterState.ValidEmail(email) }

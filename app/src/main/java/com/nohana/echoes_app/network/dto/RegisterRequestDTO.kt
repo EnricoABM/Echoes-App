@@ -8,7 +8,5 @@ data class RegisterRequestDTO(
     @SerializedName("email")
     val email: String,
     @SerializedName("password")
-    val password: String,
-    @SerializedName("role")
-    val role: String
+    val password: String
 )

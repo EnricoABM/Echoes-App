@@ -106,7 +106,7 @@ class AuthViewModel(
 
     fun validateToken() {
         viewModelScope.launch {
-            val token = tokenStorage.getToken()
+            val token = tokenStorage.getToken() ?: ""
             Log.d("TOKEN", token)
 
             if (token.isBlank()) {
@@ -138,7 +138,7 @@ class AuthViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            val token = tokenStorage.getToken()
+            val token = tokenStorage.getToken() ?: ""
 
             if (token.isBlank()) {
                 Log.d("TOKEN ON LOGOUT", "NULL")

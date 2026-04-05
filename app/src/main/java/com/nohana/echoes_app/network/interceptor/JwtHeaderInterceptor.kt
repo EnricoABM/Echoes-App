@@ -15,7 +15,7 @@ class JwtHeaderInterceptor(
 
     private val tokenStorage = TokenStorage(context.applicationContext)
     override fun intercept(chain: Interceptor.Chain): Response = runBlocking {
-        val token = tokenStorage.getToken()
+        val token = tokenStorage.getToken() ?: ""
 
         val request = if (token.isNotEmpty()) {
             chain.request()
