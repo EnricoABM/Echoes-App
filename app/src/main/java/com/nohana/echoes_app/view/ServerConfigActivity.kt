@@ -38,8 +38,7 @@ class ServerConfigActivity : ComponentActivity() {
                                 return@ServerConfigScreen
                             }
                             // monta a URL completa
-                            val address = "http://$ip:8080/"
-                            serverStorage.setAddress(address)
+                            serverStorage.setAddress(ip)
 
                             finish()
                         },

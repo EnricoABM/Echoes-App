@@ -19,56 +19,69 @@ object Crypto {
 
     private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply {
             load(null)
-        }
+    }
 
     public fun encrypt(text: String): String {
+        // Inicialização do objeto com a configuração de criptografia
         val cipher = Cipher.getInstance(TRANSFORMATION)
 
+        // Inicialização do objeto para criptografar dados
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
 
+        // Definição do Valor de Inicialização
         val iv = cipher.iv
+
+        // Dados Criptografados
         val encryptedBytes = cipher.doFinal(text.toByteArray(Charsets.UTF_8))
 
+        // Transformação dos dados binários em valor textual
         val encrypted = Base64.encodeToString(iv + encryptedBytes, Base64.NO_WRAP)
-        Log.d("ENCRYPTED", encrypted)
         return encrypted
     }
 
     public fun decrypted(data: String): String {
+        // Decodificador do valor textual
         val decoded = Base64.decode(data, Base64.NO_WRAP)
 
+        // Inicialização do objeto com a configuração de descriptografia
         val cipher = Cipher.getInstance(TRANSFORMATION)
 
+        // Particionando os valores da cifra
         val iv = decoded.copyOfRange(0, cipher.blockSize)
         val encryptedBytes = decoded.copyOfRange(cipher.blockSize, decoded.size)
+
+        // Inicialização do objeto para descriptografar dados
         cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
 
+        // Bytes descriptografados
         val decryptedBytes = cipher.doFinal(encryptedBytes)
 
+        // Transformação dos bytes em valor textual
         val decrypted = String(decryptedBytes, Charsets.UTF_8)
-        Log.d("DECRYPTED", decrypted)
         return decrypted
     }
 
     private fun createKey(): SecretKey {
+        // Criação da chave de criptografia
         return KeyGenerator
-            .getInstance(ALGORITM)
+            .getInstance(ALGORITM) // Definição do Algoritmo
             .apply {
                 init(
                     KeyGenParameterSpec.Builder(
-                        KEY_ALIAS,
-                        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                        KEY_ALIAS, // Nome da chave
+                        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT // Proposito da chave
                     )
-                        .setBlockModes(BLOCK_MODE)
-                        .setEncryptionPaddings(PADDING)
-                        .setRandomizedEncryptionRequired(true)
-                        .setUserAuthenticationRequired(false)
+                        .setBlockModes(BLOCK_MODE) // Modo de operação
+                        .setEncryptionPaddings(PADDING) // Modo de preenchimento
+                        .setRandomizedEncryptionRequired(true) // Randomização de Criptografia
+                        .setUserAuthenticationRequired(false) // Sem necessidade de autorização biometrica
                         .build()
                 )
             }.generateKey()
     }
 
     private fun getKey(): SecretKey {
+        // Verifica a existencia da chave, do contrário, o método cria uma nova
         val existingKey = keyStore
             .getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
         return existingKey?.secretKey ?: createKey()

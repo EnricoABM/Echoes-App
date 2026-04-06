@@ -19,8 +19,6 @@ class NetworkProvider {
 
         const val ADDRESS = "http://192.168.15.77:8080/"
 
-        // Inteceptor para mostrar log no sistema
-
         fun getRetrofitInstance(path: String, context: Context): Retrofit {
 
             val jwtInteceptor = JwtHeaderInterceptor(context)
@@ -30,7 +28,7 @@ class NetworkProvider {
             }
 
             val clientOkHttp = OkHttpClient.Builder()
-                .addInterceptor(logging)
+                // .addInterceptor(logging)
                 .build()
 
 
@@ -50,7 +48,7 @@ class NetworkProvider {
             }
 
             val clientOkHttp = OkHttpClient.Builder()
-                .addInterceptor(logging)
+                // .addInterceptor(logging)
                 .addInterceptor(jwtInteceptor)
                 .build()
 

@@ -11,6 +11,7 @@ class ServerStorage(context: Context) {
     }
 
     fun setAddress(address: String) {
+        val address = "https://$address:8080/"
         prefs.edit().putString("server_address", address).apply()
     }
 
