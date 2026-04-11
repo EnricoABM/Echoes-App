@@ -1,52 +1,133 @@
-# Introdução
-Aplicação mobile desenvolvida para interação com o sistema Echoes, responsável pelo monitoramento e gestão de dados provenientes de dispositivos IoT.
-O aplicativo permite que usuários autenticados acessem informações do sistema, realizem consultas e interajam com funcionalidades disponibilizadas pela plataforma.
-A comunicação com o backend ocorre por meio de uma API REST, responsável pela autenticação de usuários e pela gestão de dados do sistema.
+# Echoes Mobile
 
-## Tecnologias Utilizadas
-O projeto foi desenvolvido utilizando as seguintes tecnologias:
+Aplicativo Android oficial para o sistema **Echoes**, desenvolvido para monitoramento e gestão de dados de dispositivos IoT.  
+O app permite que usuários autenticados acessem informações do sistema, realizem consultas e interajam com as funcionalidades da plataforma através de uma API REST.
+
+## Funcionalidades
+
+* Configuração do servidor – Definição do endereço do backend diretamente no app
+* Registro de usuário – Cadastro com validação por código (2FA via e-mail)
+* Login com 2FA – Autenticação em duas etapas
+* Recuperação de senha – Solicitação de código e redefinição
+* Alteração de senha – Validação da senha atual antes da troca
+* Perfil do usuário – Visualização dos dados cadastrados
+* Logout – Encerramento da sessão
+* Armazenamento seguro – Token JWT criptografado no dispositivo
+
+## Tecnologias utilizadas
+
 * Kotlin
-* Android Studio
 * Jetpack Compose
-* Retrofit
-* OkHttp
-* Android Jetpack ViewModel
-* DataStore
+* Android Jetpack (ViewModel, DataStore)
+* Retrofit + OkHttp
+* Coroutines
+* Material Design 3
+* Android Keystore (AES/CBC/PKCS7)
 
-## Comunicação com a API
+## Arquitetura
 
-O aplicativo se comunica com o servidor por meio de requisições HTTP utilizando a biblioteca Retrofit.
-Após o processo de autenticação, o servidor retorna um token JWT que deve ser incluído no cabeçalho das requisições subsequentes:
+O projeto segue o padrão **MVVM (Model-View-ViewModel)**.
+
+Os estados de UI são representados por **sealed classes** (ex.: `LoginState`, `RegisterState`, `ForgotPasswordState`) e gerenciados com `StateFlow`.
+
+### Estrutura de pacotes
 
 ```
-Authorization: Bearer $token
+com.nohana.echoes_app/
+├── data/        # Armazenamento (ServerStorage, TokenStorage)
+├── model/       # Modelos de domínio
+├── network/     # DTOs, interceptors, Retrofit
+├── security/    # Criptografia (AndroidKeyStore)
+├── service/     # Serviços e validações
+├── ui/theme/    # Tema e estilo
+├── view/        # Telas e componentes
+│   ├── components/
+│   ├── screen/
+│   └── state/
+└── viewmodel/   # ViewModels
 ```
 
-Esse token é armazenado localmente no dispositivo e utilizado para autenticar futuras requisições
+## Segurança
 
-## Como Executar o Projeto
+* Comunicação via HTTPS (quando disponível)
+* Token JWT armazenado de forma criptografada
+* Uso de Android Keystore para gerenciamento de chave
+* Senhas não são armazenadas localmente
+* Validação de senha com critérios mínimos de segurança
+
+## Como executar o projeto
+
 ### 1. Pré-requisitos
 
-Para executar o projeto é necessário possuir instalado:
-* Android Studio
-* Android SDK
-* Emulador Android ou dispositivo físico
+* Android Studio (versão recente)
+* Android SDK (API 30+)
+* Emulador ou dispositivo físico
 
 ### 2. Clonar o repositório
+
 ```bash
 git clone https://github.com/EnricoABM/Echoes-Mobile.git
 cd Echoes-Mobile
 ```
-### 3. Configurar endereço da API
 
-Antes de executar o aplicativo, é necessário configurar o endereço do servidor de autenticação.
-O endereço da API pode ser definido no arquivo de valores constantes do sistema:
-```kotlin
-Const.kt
-ADDRESS = "http://localhost:8080"
+### 3. Configurar o servidor
+
+O aplicativo não possui endereço fixo.
+
+Na inicialização:
+* acessar a opção **IP Config**
+* informar o endereço do backend (ex.: 192.168.0.100)
+
+O app irá utilizar automaticamente:
 ```
-## Executando o Aplicativo
+https://<ip>:8443
+```
 
-* Abra o projeto no Android Studio
-* Aguarde o download das dependências do Gradle
-* Execute o projeto em um emulador ou dispositivo físico
+Caso esteja em ambiente de desenvolvimento:
+```
+http://<ip>:8080
+```
+
+Pode ser necessário permitir HTTP no arquivo:
+```
+network_security_config.xml
+```
+
+### 4. Executar
+
+* Abrir o projeto no Android Studio
+* Aguardar sincronização do Gradle
+* Executar no dispositivo/emulador
+
+## Endpoints utilizados
+
+```
+POST   /api/auth/register
+POST   /api/auth/register/2fa
+POST   /api/auth/login
+POST   /api/auth/login/2fa
+GET    /api/auth/validate-token
+GET    /api/auth/logout
+GET    /api/users/me
+
+POST   /api/password/forgot
+POST   /api/password/reset
+POST   /api/password/validate
+POST   /api/password/change
+```
+
+Endpoints protegidos utilizam:
+
+```
+Authorization: Bearer <token>
+```
+
+## Observações
+
+* O app depende diretamente do servidor Echoes
+* O backend deve estar em execução para uso completo
+* Em produção, utilizar sempre HTTPS
+
+## Licença
+
+Projeto de uso acadêmico.
