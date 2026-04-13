@@ -1,6 +1,6 @@
 package com.nohana.echoes_app.viewmodel
 
-import RegisterState
+import com.nohana.echoes_app.view.state.RegisterState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.network.dto.RegisterRequestDTO
@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import java.io.IOException
 
 class RegisterViewModel(
@@ -21,17 +20,19 @@ class RegisterViewModel(
     private val _state = MutableStateFlow<RegisterState>(RegisterState.Register)
     val state = _state.asStateFlow()
 
-    fun register(name: String, email: String, password: String) {
+    fun register(name: String, email: String, password: String, confirmPassword: String) {
         val nameError = FieldValidatorService.validateName(name)
         val emailError = FieldValidatorService.validateEmail(email)
         val passwordError = FieldValidatorService.validatePassword(password)
+        val confirmPasswordError = FieldValidatorService.validatePasswordConfirmation(password, confirmPassword)
 
-        if (nameError != null || emailError != null || passwordError != null) {
+        if (nameError != null || emailError != null || passwordError != null || confirmPasswordError != null) {
             _state.update {
                 RegisterState.RegisterValidationError(
                     nameError = nameError?.message,
                     emailError = emailError?.message,
-                    passwordError = passwordError?.message
+                    passwordError = passwordError?.message,
+                    confirmPasswordError = confirmPasswordError?.message
                 )
             }
             return
@@ -41,7 +42,7 @@ class RegisterViewModel(
             _state.update { RegisterState.Loading }
             try {
                 val response = registerNetworkService.register(
-                    RegisterRequestDTO(name, email, password)
+                    RegisterRequestDTO(name, email, password, confirmPassword)
                 )
                 if (response.isSuccessful) {
                     _state.update { RegisterState.ValidEmail(email) }

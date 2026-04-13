@@ -28,7 +28,7 @@ class NetworkProvider {
             }
 
             val clientOkHttp = OkHttpClient.Builder()
-                // .addInterceptor(logging)
+                .addInterceptor(logging)
                 .build()
 
 
@@ -48,7 +48,7 @@ class NetworkProvider {
             }
 
             val clientOkHttp = OkHttpClient.Builder()
-                // .addInterceptor(logging)
+                .addInterceptor(logging)
                 .addInterceptor(jwtInteceptor)
                 .build()
 

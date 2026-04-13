@@ -1,3 +1,5 @@
+package com.nohana.echoes_app.view.state
+
 sealed interface RegisterState {
     object Loading : RegisterState
     object Register : RegisterState
@@ -13,7 +15,8 @@ sealed interface RegisterState {
     data class RegisterValidationError(
         val nameError: String? = null,
         val emailError: String? = null,
-        val passwordError: String? = null
+        val passwordError: String? = null,
+        val confirmPasswordError: String? = null
     ) : RegisterState
 
     data class CodeValidationError(

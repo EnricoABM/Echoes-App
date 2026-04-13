@@ -36,15 +36,17 @@ import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 
 @Composable
 fun RegisterScreen(
-    onRegister: (String, String, String) -> Unit,
+    onRegister: (String, String, String, String) -> Unit,
     nameError: String? = null,
     emailError: String? = null,
     passwordError: String? = null,
+    confirmPasswordError: String? = null,
     errorMessage: String? = null
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -97,6 +99,18 @@ fun RegisterScreen(
                 } else null
             )
 
+            OutlinedTextField(
+                label = { Text("Confirme sua Senha") },
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                isError = confirmPasswordError != null || errorMessage != null,
+                supportingText = if (confirmPasswordError != null) {
+                    { Text(confirmPasswordError, color = MaterialTheme.colorScheme.error) }
+                } else null
+            )
+
             if (errorMessage != null) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
@@ -105,7 +119,7 @@ fun RegisterScreen(
 
         Button(
             modifier = Modifier.width(200.dp),
-            onClick = { onRegister(name, email, password) },
+            onClick = { onRegister(name, email, password, confirmPassword) },
             colors = ButtonDefaults.buttonColors(
                 containerColor = DarkBlue,
                 contentColor = Color.White

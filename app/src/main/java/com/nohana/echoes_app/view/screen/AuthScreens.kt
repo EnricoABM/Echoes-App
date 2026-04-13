@@ -149,7 +149,7 @@ fun TwoFactorScreen(
             Spacer(modifier = Modifier.height(50.dp))
 
             Text(
-                text = "E-mail enviado para $email",
+                text = "E-mail enviado para \n$email",
                 textAlign = TextAlign.Center
             )
 
