@@ -18,14 +18,18 @@ sealed interface RegisterState {
     // ── Visualização de termos (somente leitura) ──────────────────────────────
 
     /**
-     * Exibe o conteúdo de um termo em modo leitura.
+     * Exibe todos os termos em modo leitura numa única tela.
      *
      * Não gera nenhuma chamada à API. O usuário fecha a tela e
-     * retorna ao formulário de registro.
+     * retorna ao formulário de registro via [backToRegister].
      *
-     * @property terms Dados do termo a ser exibido.
+     * @property termsOfUse    Dados dos Termos de Uso.
+     * @property privacyPolicy Dados da Política de Privacidade.
      */
-    data class ViewTerms(val terms: TermsResponseDTO) : RegisterState
+    data class ViewTerms(
+        val termsOfUse: TermsResponseDTO,
+        val privacyPolicy: TermsResponseDTO
+    ) : RegisterState
 
     /**
      * Falha ao carregar um termo para visualização.

@@ -53,8 +53,6 @@ import com.nohana.echoes_app.ui.theme.EchoesAppTheme
  * padrão visual das demais telas do aplicativo.
  *
  * @param onRegister           Chamado com os dados do formulário ao submeter.
- * @param onViewTermsOfUse     Chamado quando o usuário clica em "Termos de Uso".
- * @param onViewPrivacyPolicy  Chamado quando o usuário clica em "Política de Privacidade".
  * @param nameError            Mensagem de erro para o campo nome.
  * @param emailError           Mensagem de erro para o campo e-mail.
  * @param passwordError        Mensagem de erro para o campo senha.
@@ -64,9 +62,7 @@ import com.nohana.echoes_app.ui.theme.EchoesAppTheme
  */
 @Composable
 fun RegisterScreen(
-    onRegister: (name: String, email: String, password: String, confirmPassword: String, termsAccepted: Boolean) -> Unit,
-    onViewTermsOfUse: () -> Unit,
-    onViewPrivacyPolicy: () -> Unit,
+    onRegister: (name: String, email: String, password: String, confirmPassword: String, termsAccepted: Boolean) -> Unit,    onViewTerms: () -> Unit,   // ← único callback de termos
     nameError: String? = null,
     emailError: String? = null,
     passwordError: String? = null,
@@ -166,43 +162,24 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // ── Checkbox de aceite dos termos ─────────────────────────────────────
+        // ── Checkbox de aceite dos termos ─────────────────────────────────────
         Row(
-            verticalAlignment = Alignment.Top,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Checkbox(
                 checked = termsAccepted,
-                onCheckedChange = { termsAccepted = it },
-                modifier = Modifier.padding(top = 4.dp)
+                onCheckedChange = { termsAccepted = it }
             )
-
-            // Texto quebra automaticamente ao encostar na borda do dispositivo
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Text(text = "Li e aceito os ")
+            TextButton(
+                onClick = onViewTerms,
+                contentPadding = PaddingValues(0.dp)
+            ) {
                 Text(
-                    text = "Li e aceito os",
+                    text = "Termos e Políticas",
                     softWrap = true
                 )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    TextButton(
-                        onClick = onViewTermsOfUse,
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.wrapContentWidth()
-                    ) {
-                        Text(text = "Termos de Uso", softWrap = true)
-                    }
-                    Text(
-                        text = " e a ",
-                        softWrap = true,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                    TextButton(
-                        onClick = onViewPrivacyPolicy,
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.wrapContentWidth()
-                    ) {
-                        Text(text = "Política de Privacidade", softWrap = true)
-                    }
-                }
             }
         }
 

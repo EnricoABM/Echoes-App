@@ -49,25 +49,15 @@ class RegisterActivity : ComponentActivity() {
                     // ── Carregando ────────────────────────────────────────────
                     RegisterState.Loading -> LoadingScreen()
 
-                    // ── Formulário de cadastro ────────────────────────────────
+                    // ── Formulário de cadastro ────────────────────────────────────────────
                     RegisterState.Register -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTermsOfUse = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
-                        },
-                        onViewPrivacyPolicy = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
-                        }
+                        onViewTerms = viewModel::loadAllTermsForViewing
                     )
 
                     is RegisterState.RegisterValidationError -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTermsOfUse = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
-                        },
-                        onViewPrivacyPolicy = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
-                        },
+                        onViewTerms = viewModel::loadAllTermsForViewing,
                         nameError = s.nameError,
                         emailError = s.emailError,
                         passwordError = s.passwordError,
@@ -77,29 +67,20 @@ class RegisterActivity : ComponentActivity() {
 
                     is RegisterState.RegisterError -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTermsOfUse = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
-                        },
-                        onViewPrivacyPolicy = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
-                        },
+                        onViewTerms = viewModel::loadAllTermsForViewing,
                         errorMessage = s.message
                     )
 
-                    // ── Visualização dos termos (somente leitura) ─────────────
+                    // ── Termos (tela unificada, somente leitura) ──────────────────────────
                     is RegisterState.ViewTerms -> TermsScreen(
-                        terms = s.terms,
-                        onClose = viewModel::backToRegister
+                        termsOfUse = s.termsOfUse,
+                        privacyPolicy = s.privacyPolicy,
+                        onBack = viewModel::backToRegister
                     )
 
                     is RegisterState.ViewTermsError -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTermsOfUse = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
-                        },
-                        onViewPrivacyPolicy = {
-                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
-                        },
+                        onViewTerms = viewModel::loadAllTermsForViewing,
                         errorMessage = s.message
                     )
 

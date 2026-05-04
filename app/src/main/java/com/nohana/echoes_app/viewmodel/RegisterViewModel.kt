@@ -9,6 +9,7 @@ import com.nohana.echoes_app.service.network.RegisterNetworkService
 import com.nohana.echoes_app.service.network.TermsNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
 import com.nohana.echoes_app.view.state.RegisterState
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -51,25 +52,41 @@ class RegisterViewModel(
     // ── Visualização de termos (somente leitura) ──────────────────────────────
 
     /**
-     * Carrega um termo da API apenas para exibição.
+     * Carrega ambos os termos (Termos de Uso e Política de Privacidade)
+     * em paralelo para exibição em uma única tela de leitura.
      *
      * Não realiza nenhuma chamada de aceite. Após a leitura, o usuário
-     * fecha a tela e retorna ao formulário de registro via [backToRegister].
-     *
-     * @param type Tipo do documento a ser exibido (ex.: [TERMS_OF_USE]).
+     * retorna ao formulário via [backToRegister].
      */
-    fun loadTermsForViewing(type: String) {
+    fun loadAllTermsForViewing() {
         viewModelScope.launch {
             _state.update { RegisterState.Loading }
             try {
-                val response = termsNetworkService.getTerms(type)
-                if (response.isSuccessful && response.body() != null) {
-                    _state.update { RegisterState.ViewTerms(response.body()!!) }
+                // Carrega os dois termos em paralelo com async
+                val termsOfUseDeferred = async { termsNetworkService.getTerms(TERMS_OF_USE) }
+                val privacyPolicyDeferred = async { termsNetworkService.getTerms(PRIVACY_POLICY) }
+
+                val termsOfUseResponse = termsOfUseDeferred.await()
+                val privacyPolicyResponse = privacyPolicyDeferred.await()
+
+                if (termsOfUseResponse.isSuccessful && termsOfUseResponse.body() != null &&
+                    privacyPolicyResponse.isSuccessful && privacyPolicyResponse.body() != null
+                ) {
+                    _state.update {
+                        RegisterState.ViewTerms(
+                            termsOfUse = termsOfUseResponse.body()!!,
+                            privacyPolicy = privacyPolicyResponse.body()!!
+                        )
+                    }
                 } else {
-                    _state.update { RegisterState.ViewTermsError("Não foi possível carregar os termos.") }
+                    _state.update {
+                        RegisterState.ViewTermsError("Não foi possível carregar os termos.")
+                    }
                 }
             } catch (e: IOException) {
-                _state.update { RegisterState.ViewTermsError("Erro de conexão ao carregar os termos.") }
+                _state.update {
+                    RegisterState.ViewTermsError("Erro de conexão ao carregar os termos.")
+                }
             }
         }
     }
@@ -84,19 +101,6 @@ class RegisterViewModel(
 
     // ── Registro ──────────────────────────────────────────────────────────────
 
-    /**
-     * Ponto de entrada do fluxo de registro.
-     *
-     * Valida os campos do formulário e o checkbox de aceite dos termos
-     * localmente. Se tudo for válido, envia o cadastro à API.
-     * Em caso de sucesso, chama [acceptAllTerms] para registrar a aceitação.
-     *
-     * @param name            Nome completo do usuário.
-     * @param email           E-mail do usuário.
-     * @param password        Senha escolhida.
-     * @param confirmPassword Confirmação da senha.
-     * @param termsAccepted   Indica se o usuário marcou o checkbox de aceite.
-     */
     /**
      * Ponto de entrada do fluxo de registro.
      *
