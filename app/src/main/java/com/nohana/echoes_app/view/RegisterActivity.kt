@@ -6,22 +6,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import com.nohana.echoes_app.MainActivity
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.view.components.TitleComponent
-import com.nohana.echoes_app.view.screen.LoadingScreen
-import com.nohana.echoes_app.view.screen.RegisterScreen
-import com.nohana.echoes_app.view.screen.ValidateCode
+import com.nohana.echoes_app.view.screen.*
 import com.nohana.echoes_app.view.state.RegisterState
 import com.nohana.echoes_app.viewmodel.RegisterViewModel
 import com.nohana.echoes_app.viewmodel.factory.RegisterViewModelFactory
-import kotlin.getValue
 
-
+/**
+ * Activity responsável pelo fluxo completo de registro de novos usuários.
+ *
+ * Observa o [RegisterViewModel.state] e renderiza a tela correspondente:
+ *
+ * - [RegisterState.Register] / erros → [RegisterScreen] com links para os termos
+ * - [RegisterState.ViewTerms] → [TermsScreen] (somente leitura)
+ * - [RegisterState.ViewTermsError] → [RegisterScreen] com mensagem de erro
+ * - [RegisterState.ValidEmail] / erros de código → [ValidateCode]
+ * - [RegisterState.Success] → navega para [MainActivity]
+ */
 class RegisterActivity : ComponentActivity() {
+
     private val viewModel: RegisterViewModel by viewModels {
         RegisterViewModelFactory(
             NetworkProvider.getAddress(applicationContext),
@@ -39,38 +45,83 @@ class RegisterActivity : ComponentActivity() {
                 TitleComponent("Registro")
 
                 when (val s = state) {
+
+                    // ── Carregando ────────────────────────────────────────────
                     RegisterState.Loading -> LoadingScreen()
 
+                    // ── Formulário de cadastro ────────────────────────────────
                     RegisterState.Register -> RegisterScreen(
-                        onRegister = viewModel::register
+                        onRegister = viewModel::register,
+                        onViewTermsOfUse = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
+                        },
+                        onViewPrivacyPolicy = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
+                        }
                     )
+
                     is RegisterState.RegisterValidationError -> RegisterScreen(
                         onRegister = viewModel::register,
+                        onViewTermsOfUse = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
+                        },
+                        onViewPrivacyPolicy = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
+                        },
                         nameError = s.nameError,
                         emailError = s.emailError,
                         passwordError = s.passwordError,
-                        confirmPasswordError = s.confirmPasswordError
+                        confirmPasswordError = s.confirmPasswordError,
+                        termsError = s.termsError
                     )
+
                     is RegisterState.RegisterError -> RegisterScreen(
                         onRegister = viewModel::register,
+                        onViewTermsOfUse = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
+                        },
+                        onViewPrivacyPolicy = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
+                        },
                         errorMessage = s.message
                     )
 
+                    // ── Visualização dos termos (somente leitura) ─────────────
+                    is RegisterState.ViewTerms -> TermsScreen(
+                        terms = s.terms,
+                        onClose = viewModel::backToRegister
+                    )
+
+                    is RegisterState.ViewTermsError -> RegisterScreen(
+                        onRegister = viewModel::register,
+                        onViewTermsOfUse = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.TERMS_OF_USE)
+                        },
+                        onViewPrivacyPolicy = {
+                            viewModel.loadTermsForViewing(RegisterViewModel.PRIVACY_POLICY)
+                        },
+                        errorMessage = s.message
+                    )
+
+                    // ── Validação 2FA ─────────────────────────────────────────
                     is RegisterState.ValidEmail -> ValidateCode(
                         email = s.email,
                         onValidate = viewModel::validateCode
                     )
+
                     is RegisterState.CodeValidationError -> ValidateCode(
                         email = s.email,
                         onValidate = viewModel::validateCode,
                         codeError = s.codeError
                     )
+
                     is RegisterState.CodeError -> ValidateCode(
                         email = s.email,
                         onValidate = viewModel::validateCode,
                         errorMessage = s.message
                     )
 
+                    // ── Sucesso ───────────────────────────────────────────────
                     RegisterState.Success -> LaunchedEffect(Unit) {
                         startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
                         finish()

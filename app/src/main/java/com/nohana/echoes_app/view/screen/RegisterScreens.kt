@@ -3,18 +3,27 @@ package com.nohana.echoes_app.view.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,92 +43,186 @@ import com.nohana.echoes_app.R
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 
+
+/**
+ * Tela de cadastro de novo usuário.
+ *
+ * Exibe os campos de nome, e-mail, senha e confirmação de senha, além de um
+ * checkbox de aceite obrigatório com links para leitura dos Termos de Uso e
+ * da Política de Privacidade. O ícone do app é exibido no topo, seguindo o
+ * padrão visual das demais telas do aplicativo.
+ *
+ * @param onRegister           Chamado com os dados do formulário ao submeter.
+ * @param onViewTermsOfUse     Chamado quando o usuário clica em "Termos de Uso".
+ * @param onViewPrivacyPolicy  Chamado quando o usuário clica em "Política de Privacidade".
+ * @param nameError            Mensagem de erro para o campo nome.
+ * @param emailError           Mensagem de erro para o campo e-mail.
+ * @param passwordError        Mensagem de erro para o campo senha.
+ * @param confirmPasswordError Mensagem de erro para a confirmação de senha.
+ * @param termsError           Mensagem de erro quando o checkbox não foi marcado.
+ * @param errorMessage         Mensagem de erro geral retornada pela API.
+ */
 @Composable
 fun RegisterScreen(
-    onRegister: (String, String, String, String) -> Unit,
+    onRegister: (name: String, email: String, password: String, confirmPassword: String, termsAccepted: Boolean) -> Unit,
+    onViewTermsOfUse: () -> Unit,
+    onViewPrivacyPolicy: () -> Unit,
     nameError: String? = null,
     emailError: String? = null,
     passwordError: String? = null,
     confirmPasswordError: String? = null,
+    termsError: String? = null,
     errorMessage: String? = null
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
+    var termsAccepted by rememberSaveable { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            Icon(
-                painter = painterResource(R.drawable.vet_icon),
-                contentDescription = "Icone"
+        // ── Ícone do app (padrão de todas as telas) ───────────────────────────
+        Icon(
+            painter = painterResource(R.drawable.vet_icon),
+            contentDescription = "Icone"
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Campos do formulário ──────────────────────────────────────────────
+        OutlinedTextField(
+            label = { Text("Nome") },
+            value = name,
+            onValueChange = { name = it },
+            modifier = Modifier.fillMaxWidth(),
+            isError = nameError != null,
+            supportingText = if (nameError != null) {
+                { Text(nameError, color = MaterialTheme.colorScheme.error) }
+            } else null
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        OutlinedTextField(
+            label = { Text("E-mail") },
+            value = email,
+            onValueChange = { email = it },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            isError = emailError != null || errorMessage != null,
+            supportingText = if (emailError != null) {
+                { Text(emailError, color = MaterialTheme.colorScheme.error) }
+            } else null
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        OutlinedTextField(
+            label = { Text("Senha") },
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            isError = passwordError != null || errorMessage != null,
+            supportingText = if (passwordError != null) {
+                { Text(passwordError, color = MaterialTheme.colorScheme.error) }
+            } else null
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        OutlinedTextField(
+            label = { Text("Confirme sua Senha") },
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            isError = confirmPasswordError != null || errorMessage != null,
+            supportingText = if (confirmPasswordError != null) {
+                { Text(confirmPasswordError, color = MaterialTheme.colorScheme.error) }
+            } else null
+        )
+
+        // ── Erro geral da API ─────────────────────────────────────────────────
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // ── Checkbox de aceite dos termos ─────────────────────────────────────
+        Row(
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = termsAccepted,
+                onCheckedChange = { termsAccepted = it },
+                modifier = Modifier.padding(top = 4.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                label = { Text("Nome") },
-                value = name,
-                onValueChange = { name = it },
-                isError = nameError != null,
-                supportingText = if (nameError != null) {
-                    { Text(nameError, color = MaterialTheme.colorScheme.error) }
-                } else null
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            OutlinedTextField(
-                label = { Text("E-mail") },
-                value = email,
-                onValueChange = { email = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                isError = emailError != null || errorMessage != null,
-                supportingText = if (emailError != null) {
-                    { Text(emailError, color = MaterialTheme.colorScheme.error) }
-                } else null
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            OutlinedTextField(
-                label = { Text("Senha") },
-                value = password,
-                onValueChange = { password = it },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError = passwordError != null || errorMessage != null,
-                supportingText = if (passwordError != null) {
-                    { Text(passwordError, color = MaterialTheme.colorScheme.error) }
-                } else null
-            )
-
-            OutlinedTextField(
-                label = { Text("Confirme sua Senha") },
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError = confirmPasswordError != null || errorMessage != null,
-                supportingText = if (confirmPasswordError != null) {
-                    { Text(confirmPasswordError, color = MaterialTheme.colorScheme.error) }
-                } else null
-            )
-
-            if (errorMessage != null) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+            // Texto quebra automaticamente ao encostar na borda do dispositivo
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Li e aceito os",
+                    softWrap = true
+                )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    TextButton(
+                        onClick = onViewTermsOfUse,
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.wrapContentWidth()
+                    ) {
+                        Text(text = "Termos de Uso", softWrap = true)
+                    }
+                    Text(
+                        text = " e a ",
+                        softWrap = true,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    TextButton(
+                        onClick = onViewPrivacyPolicy,
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.wrapContentWidth()
+                    ) {
+                        Text(text = "Política de Privacidade", softWrap = true)
+                    }
+                }
             }
         }
 
+        if (termsError != null) {
+            Text(
+                text = termsError,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Botão de cadastro ─────────────────────────────────────────────────
         Button(
             modifier = Modifier.width(200.dp),
-            onClick = { onRegister(name, email, password, confirmPassword) },
+            onClick = { onRegister(name, email, password, confirmPassword, termsAccepted) },
             colors = ButtonDefaults.buttonColors(
                 containerColor = DarkBlue,
                 contentColor = Color.White
@@ -127,6 +230,8 @@ fun RegisterScreen(
         ) {
             Text(text = "Registrar", fontSize = 5.em)
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
