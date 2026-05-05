@@ -52,12 +52,16 @@ class RegisterActivity : ComponentActivity() {
                     // ── Formulário de cadastro ────────────────────────────────────────────
                     RegisterState.Register -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTerms = viewModel::loadAllTermsForViewing
+                        onViewTerms = {
+                            startActivity(Intent(this@RegisterActivity, TermsActivity::class.java))
+                        }
                     )
 
                     is RegisterState.RegisterValidationError -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTerms = viewModel::loadAllTermsForViewing,
+                        onViewTerms = {
+                            startActivity(Intent(this@RegisterActivity, TermsActivity::class.java))
+                        },
                         nameError = s.nameError,
                         emailError = s.emailError,
                         passwordError = s.passwordError,
@@ -67,7 +71,9 @@ class RegisterActivity : ComponentActivity() {
 
                     is RegisterState.RegisterError -> RegisterScreen(
                         onRegister = viewModel::register,
-                        onViewTerms = viewModel::loadAllTermsForViewing,
+                        onViewTerms = {
+                            startActivity(Intent(this@RegisterActivity, TermsActivity::class.java))
+                        },
                         errorMessage = s.message
                     )
 

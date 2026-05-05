@@ -73,7 +73,8 @@ fun LoginScreen(
                 isError = error.isNotBlank() || emailError != null,
                 supportingText = if (emailError != null) {
                     { Text(emailError, color = MaterialTheme.colorScheme.error) }
-                } else null
+                } else null,
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -89,7 +90,8 @@ fun LoginScreen(
                 isError = error.isNotBlank() || passwordError != null,
                 supportingText = if (passwordError != null) {
                     { Text(passwordError, color = MaterialTheme.colorScheme.error) }
-                } else null
+                } else null,
+                singleLine = true
             )
 
             TextButton(
@@ -163,7 +165,8 @@ fun TwoFactorScreen(
                     keyboardType = KeyboardType.Number
                 ),
                 placeholder = { Text("Digite o código de 6 dígitos") },
-                isError = error.isNotBlank()
+                isError = error.isNotBlank(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(6.dp))

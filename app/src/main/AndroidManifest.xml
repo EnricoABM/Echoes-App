@@ -47,6 +47,9 @@
         <activity android:name=".view.ServerConfigActivity">
 
         </activity>
+
+        <activity android:name=".view.TermsActivity" />
+        <activity android:name=".view.TermsViewerActivity" />
     </application>
 
 </manifest>

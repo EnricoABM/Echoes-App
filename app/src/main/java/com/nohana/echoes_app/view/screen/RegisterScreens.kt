@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.max
 import com.nohana.echoes_app.R
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
@@ -62,7 +64,8 @@ import com.nohana.echoes_app.ui.theme.EchoesAppTheme
  */
 @Composable
 fun RegisterScreen(
-    onRegister: (name: String, email: String, password: String, confirmPassword: String, termsAccepted: Boolean) -> Unit,    onViewTerms: () -> Unit,   // ← único callback de termos
+    onRegister: (name: String, email: String, password: String, confirmPassword: String, termsAccepted: Boolean) -> Unit,
+    onViewTerms: () -> Unit,
     nameError: String? = null,
     emailError: String? = null,
     passwordError: String? = null,
@@ -85,8 +88,9 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // ── Ícone do app (padrão de todas as telas) ───────────────────────────
+        // ── Ícone do app  ───────────────────────────
         Icon(
+            modifier = Modifier.size(200.dp),
             painter = painterResource(R.drawable.vet_icon),
             contentDescription = "Icone"
         )
@@ -102,7 +106,8 @@ fun RegisterScreen(
             isError = nameError != null,
             supportingText = if (nameError != null) {
                 { Text(nameError, color = MaterialTheme.colorScheme.error) }
-            } else null
+            } else null,
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -116,7 +121,8 @@ fun RegisterScreen(
             isError = emailError != null || errorMessage != null,
             supportingText = if (emailError != null) {
                 { Text(emailError, color = MaterialTheme.colorScheme.error) }
-            } else null
+            } else null,
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -131,7 +137,8 @@ fun RegisterScreen(
             isError = passwordError != null || errorMessage != null,
             supportingText = if (passwordError != null) {
                 { Text(passwordError, color = MaterialTheme.colorScheme.error) }
-            } else null
+            } else null,
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -146,7 +153,8 @@ fun RegisterScreen(
             isError = confirmPasswordError != null || errorMessage != null,
             supportingText = if (confirmPasswordError != null) {
                 { Text(confirmPasswordError, color = MaterialTheme.colorScheme.error) }
-            } else null
+            } else null,
+            singleLine = true
         )
 
         // ── Erro geral da API ─────────────────────────────────────────────────
@@ -162,7 +170,6 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // ── Checkbox de aceite dos termos ─────────────────────────────────────
-        // ── Checkbox de aceite dos termos ─────────────────────────────────────
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -176,10 +183,7 @@ fun RegisterScreen(
                 onClick = onViewTerms,
                 contentPadding = PaddingValues(0.dp)
             ) {
-                Text(
-                    text = "Termos e Políticas",
-                    softWrap = true
-                )
+                Text(text = "Termos e Políticas", softWrap = true)
             }
         }
 
@@ -251,7 +255,8 @@ fun ValidateCode(
                 isError = codeError != null || errorMessage != null,
                 supportingText = if (codeError != null) {
                     { Text(codeError, color = MaterialTheme.colorScheme.error) }
-                } else null
+                } else null,
+                singleLine = true
             )
 
             if (errorMessage != null) {
