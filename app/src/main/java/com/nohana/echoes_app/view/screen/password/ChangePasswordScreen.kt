@@ -1,4 +1,4 @@
-package com.nohana.echoes_app.view.screen
+package com.nohana.echoes_app.view.screen.password
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions

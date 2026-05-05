@@ -1,4 +1,4 @@
-package com.nohana.echoes_app.view.screen
+package com.nohana.echoes_app.view.screen.terms
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

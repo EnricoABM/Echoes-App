@@ -12,8 +12,8 @@ import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.network.dto.TermsResponseDTO
 import com.nohana.echoes_app.view.components.TitleComponent
 import com.nohana.echoes_app.view.screen.LoadingScreen
-import com.nohana.echoes_app.view.screen.TermsErrorScreen
-import com.nohana.echoes_app.view.screen.TermsListScreen
+import com.nohana.echoes_app.view.screen.terms.TermsErrorScreen
+import com.nohana.echoes_app.view.screen.terms.TermsListScreen
 import com.nohana.echoes_app.view.state.TermsActivityState
 import com.nohana.echoes_app.viewmodel.TermsViewModel
 import com.nohana.echoes_app.viewmodel.factory.TermsViewModelFactory

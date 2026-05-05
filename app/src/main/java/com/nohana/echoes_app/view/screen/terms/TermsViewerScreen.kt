@@ -1,4 +1,4 @@
-package com.nohana.echoes_app.view.screen
+package com.nohana.echoes_app.view.screen.terms
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -18,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
-import com.nohana.echoes_app.network.dto.TermsResponseDTO
 import com.nohana.echoes_app.ui.theme.DarkBlue
 
 /**
@@ -69,7 +69,7 @@ fun TermsViewerScreen(
                 contentColor = Color.White
             )
         ) {
-            androidx.compose.material3.Text(text = "Fechar", fontSize = 4.em)
+            Text(text = "Fechar", fontSize = 4.em)
         }
 
         Spacer(modifier = Modifier.height(8.dp))

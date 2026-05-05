@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import com.nohana.echoes_app.view.components.TitleComponent
-import com.nohana.echoes_app.view.screen.TermsViewerScreen
+import com.nohana.echoes_app.view.screen.terms.TermsViewerScreen
 
 /**
  * Activity que exibe o conteúdo completo de um único termo em WebView.

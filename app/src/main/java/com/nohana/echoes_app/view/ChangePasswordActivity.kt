@@ -11,6 +11,8 @@ import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.components.TitleComponent
 import com.nohana.echoes_app.view.screen.*
+import com.nohana.echoes_app.view.screen.password.ChangePasswordCurrentScreen
+import com.nohana.echoes_app.view.screen.password.ChangePasswordNewScreen
 import com.nohana.echoes_app.view.state.ChangePasswordState
 import com.nohana.echoes_app.viewmodel.ChangePasswordViewModel
 import com.nohana.echoes_app.viewmodel.factory.ChangePasswordViewModelFactory

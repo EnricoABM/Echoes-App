@@ -1,20 +1,18 @@
 package com.nohana.echoes_app.view
 
-import android.icu.text.CaseMap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.view.components.TitleComponent
-import com.nohana.echoes_app.view.screen.ForgotPasswordCodeScreen
-import com.nohana.echoes_app.view.screen.ForgotPasswordEmailScreen
-import com.nohana.echoes_app.view.screen.ForgotPasswordNewPasswordScreen
+import com.nohana.echoes_app.view.screen.password.ForgotPasswordCodeScreen
+import com.nohana.echoes_app.view.screen.password.ForgotPasswordEmailScreen
+import com.nohana.echoes_app.view.screen.password.ForgotPasswordNewPasswordScreen
 import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.state.ForgotPasswordState
 import com.nohana.echoes_app.viewmodel.PasswordResetViewModel

@@ -11,6 +11,7 @@ import com.nohana.echoes_app.MainActivity
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.view.components.TitleComponent
 import com.nohana.echoes_app.view.screen.*
+import com.nohana.echoes_app.view.screen.terms.TermsScreen
 import com.nohana.echoes_app.view.state.RegisterState
 import com.nohana.echoes_app.viewmodel.RegisterViewModel
 import com.nohana.echoes_app.viewmodel.factory.RegisterViewModelFactory
@@ -21,7 +22,7 @@ import com.nohana.echoes_app.viewmodel.factory.RegisterViewModelFactory
  * Observa o [RegisterViewModel.state] e renderiza a tela correspondente:
  *
  * - [RegisterState.Register] / erros → [RegisterScreen] com links para os termos
- * - [RegisterState.ViewTerms] → [TermsScreen] (somente leitura)
+ * - [RegisterState.ViewTerms] → [com.nohana.echoes_app.view.screen.terms.TermsScreen] (somente leitura)
  * - [RegisterState.ViewTermsError] → [RegisterScreen] com mensagem de erro
  * - [RegisterState.ValidEmail] / erros de código → [ValidateCode]
  * - [RegisterState.Success] → navega para [MainActivity]

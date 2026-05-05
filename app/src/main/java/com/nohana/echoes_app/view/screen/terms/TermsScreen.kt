@@ -1,4 +1,4 @@
-package com.nohana.echoes_app.view.screen
+package com.nohana.echoes_app.view.screen.terms
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
