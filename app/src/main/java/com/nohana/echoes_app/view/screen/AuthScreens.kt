@@ -14,8 +14,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,7 +76,12 @@ fun LoginScreen(
                 supportingText = if (emailError != null) {
                     { Text(emailError, color = MaterialTheme.colorScheme.error) }
                 } else null,
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             Spacer(modifier = Modifier.height(6.dp))

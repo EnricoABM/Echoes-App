@@ -26,7 +26,7 @@ class AuthActivity(): ComponentActivity() {
 
     private val viewModel: AuthViewModel by viewModels {
         AuthViewModelFactory(
-            NetworkProvider.getAddress(applicationContext),
+            NetworkProvider.getAddress(),
             applicationContext
         )
     }

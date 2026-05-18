@@ -21,7 +21,7 @@ class ChangePasswordActivity : ComponentActivity() {
 
     private val viewModel: ChangePasswordViewModel by viewModels {
         ChangePasswordViewModelFactory(
-            NetworkProvider.getAddress(applicationContext),
+            NetworkProvider.getAddress(),
             applicationContext
         )
     }

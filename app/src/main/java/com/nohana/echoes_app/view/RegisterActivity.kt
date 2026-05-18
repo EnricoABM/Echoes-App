@@ -31,7 +31,7 @@ class RegisterActivity : ComponentActivity() {
 
     private val viewModel: RegisterViewModel by viewModels {
         RegisterViewModelFactory(
-            NetworkProvider.getAddress(applicationContext),
+            NetworkProvider.getAddress(),
             applicationContext
         )
     }

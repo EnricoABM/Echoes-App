@@ -30,7 +30,7 @@ class TermsActivity : ComponentActivity() {
 
     private val viewModel: TermsViewModel by viewModels {
         TermsViewModelFactory(
-            NetworkProvider.getAddress(applicationContext),
+            NetworkProvider.getAddress(),
             applicationContext
         )
     }

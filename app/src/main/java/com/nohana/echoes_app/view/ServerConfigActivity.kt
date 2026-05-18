@@ -31,7 +31,8 @@ class ServerConfigActivity : ComponentActivity() {
                     ServerConfigScreen(
                         currentAddress = serverStorage.getAddress()
                             .removePrefix("http://")
-                            .removeSuffix(":8080/"),
+                            .removeSuffix(":8080/")
+                            .removeSuffix(":443"),
                         onSave = { ip ->
                             if (ip.isBlank()) {
                                 errorMessage = "Informe um endereço válido"

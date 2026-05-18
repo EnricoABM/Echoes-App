@@ -13,11 +13,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class NetworkProvider {
 
     companion object {
-        fun getAddress(context: Context): String {
-            return ServerStorage(context).getAddress()
+        fun getAddress(): String {
+            return "https://echoes.avraham.dev.br/"
         }
-
-        const val ADDRESS = "http://192.168.15.77:8080/"
 
         fun getRetrofitInstance(path: String, context: Context): Retrofit {
 
