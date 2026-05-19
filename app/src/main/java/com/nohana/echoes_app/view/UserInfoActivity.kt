@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +43,8 @@ import com.nohana.echoes_app.view.screen.HomeScreen
 import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.ProfileScreen
 import com.nohana.echoes_app.view.screen.SettingsScreen
+import com.nohana.echoes_app.view.screen.TeacherScreen
+import com.nohana.echoes_app.view.screen.StoreScreen
 import com.nohana.echoes_app.view.state.UserInfoState
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.UserViewModel
@@ -72,7 +75,9 @@ class UserInfoActivity : ComponentActivity() {
      */
     private enum class BottomTab(val label: String, val iconRes: ImageVector) {
         PROFILE("Perfil", Icons.Rounded.Person),
+        CLASS("Turmas", Icons.Rounded.Person),
         DEVICES("Dispositivos", Icons.Rounded.Home),
+        STORE("Loja", Icons.Rounded.ShoppingCart),
         SETTINGS("Configurações", Icons.Rounded.Settings)
     }
 
@@ -129,12 +134,12 @@ class UserInfoActivity : ComponentActivity() {
                                 onClick = { selectedTab = tab },
                                 icon = {
                                     Icon(
-                                        modifier = Modifier.size(30.dp),
+                                        modifier = Modifier.size(25.dp),
                                         imageVector = tab.iconRes,
                                         contentDescription = tab.label
                                     )
                                 },
-                                label = { Text(tab.label, fontSize = 10.sp) },
+                                label = { Text(tab.label, fontSize = 8.sp, maxLines = 1) },
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = DarkBlue,
                                     unselectedIconColor = Color.White.copy(alpha = 0.7f),
@@ -169,6 +174,10 @@ class UserInfoActivity : ComponentActivity() {
                             )
 
                             BottomTab.SETTINGS -> SettingsScreen()
+
+                            BottomTab.CLASS -> TeacherScreen()
+
+                            BottomTab.STORE -> StoreScreen()
                         }
                     }
 
