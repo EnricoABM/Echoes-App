@@ -83,7 +83,6 @@ fun TeacherScreen() {
             .padding(horizontal = 15.dp)
     ) {
 
-        // ── Barra de Pesquisa ────────────────────────────────────────────────
         OutlinedTextField(
             value = pesquisa,
             onValueChange = { pesquisa = it },
@@ -105,7 +104,6 @@ fun TeacherScreen() {
             )
         )
 
-        // ── Grid de Turmas ──────────────────────────────────────────────────
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
@@ -126,7 +124,7 @@ fun TeacherScreen() {
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = ripple(bounded = true)
-                        ) { /* Navegar ou abrir detalhes da turma */ }
+                        ) { }
                         .padding(16.dp)
                 ) {
                     Column(
@@ -141,11 +139,13 @@ fun TeacherScreen() {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+
                         Spacer(modifier = Modifier.height(4.dp))
+
                         Text(
                             text = turma.descricao,
                             fontSize = 13.sp,
-                            color = Color.Gray,
+                            color = Color.White,
                             maxLines = 3,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -154,7 +154,6 @@ fun TeacherScreen() {
             }
         }
 
-        // ── Botão Flutuante ─────────────────────────────────────────────────
         FloatingActionButton(
             onClick = { mostrarMenu = true },
             modifier = Modifier.align(Alignment.BottomEnd),
@@ -168,7 +167,6 @@ fun TeacherScreen() {
         }
     }
 
-    // ── Modal Menu de Opções ────────────────────────────────────────────────
     if (mostrarMenu) {
 
         val opcoes = listOf(
@@ -213,13 +211,16 @@ fun TeacherScreen() {
                                 contentDescription = opcao.label,
                                 tint = Azul
                             )
+
                             Spacer(modifier = Modifier.width(12.dp))
+
                             Text(
                                 text = opcao.label,
                                 fontSize = 16.sp,
                                 color = Color.DarkGray
                             )
                         }
+
                         if (index < opcoes.lastIndex) {
                             HorizontalDivider(color = Color.LightGray)
                         }
@@ -237,7 +238,6 @@ fun TeacherScreen() {
         )
     }
 
-    // ── Modal Criar Turma ───────────────────────────────────────────────────
     if (mostrarCriar) {
 
         var nome by remember { mutableStateOf("") }
@@ -258,7 +258,6 @@ fun TeacherScreen() {
 
             text = {
                 Column {
-
                     Text("Nome", color = Color.Gray, fontSize = 14.sp)
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -311,7 +310,12 @@ fun TeacherScreen() {
                         if (nome.isBlank() || descricao.isBlank()) {
                             erro = true
                         } else {
-                            turmas.add(Turma(nome = nome, descricao = descricao))
+                            turmas.add(
+                                Turma(
+                                    nome = nome,
+                                    descricao = descricao
+                                )
+                            )
                             mostrarCriar = false
                         }
                     },
@@ -323,6 +327,206 @@ fun TeacherScreen() {
 
             dismissButton = {
                 TextButton(onClick = { mostrarCriar = false }) {
+                    Text("Cancelar", color = Color.Gray)
+                }
+            }
+        )
+    }
+
+    if (mostrarEditar) {
+
+        var nomeAtual by remember { mutableStateOf("") }
+        var novoNome by remember { mutableStateOf("") }
+        var novaDescricao by remember { mutableStateOf("") }
+        var erro by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { mostrarEditar = false },
+
+            title = {
+                Text(
+                    text = "Editar Turma",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Azul
+                )
+            },
+
+            text = {
+                Column {
+                    Text("Nome da turma atual", color = Color.Gray, fontSize = 14.sp)
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    OutlinedTextField(
+                        value = nomeAtual,
+                        onValueChange = { nomeAtual = it },
+                        placeholder = { Text("Ex: Turma A") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Azul,
+                            unfocusedBorderColor = Color.LightGray
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text("Novo nome", color = Color.Gray, fontSize = 14.sp)
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    OutlinedTextField(
+                        value = novoNome,
+                        onValueChange = { novoNome = it },
+                        placeholder = { Text("Ex: Turma B") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Azul,
+                            unfocusedBorderColor = Color.LightGray
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text("Nova descrição", color = Color.Gray, fontSize = 14.sp)
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    OutlinedTextField(
+                        value = novaDescricao,
+                        onValueChange = { novaDescricao = it },
+                        placeholder = { Text("Ex: Turma do 2º ano") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                        maxLines = 4,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Azul,
+                            unfocusedBorderColor = Color.LightGray
+                        )
+                    )
+
+                    if (erro) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Turma não encontrada ou campos vazios!",
+                            color = Color.Red,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val index = turmas.indexOfFirst {
+                            it.nome.equals(nomeAtual, ignoreCase = true)
+                        }
+
+                        if (
+                            index == -1 ||
+                            nomeAtual.isBlank() ||
+                            novoNome.isBlank() ||
+                            novaDescricao.isBlank()
+                        ) {
+                            erro = true
+                        } else {
+                            turmas[index] = Turma(
+                                nome = novoNome,
+                                descricao = novaDescricao
+                            )
+                            mostrarEditar = false
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Azul)
+                ) {
+                    Text("Salvar", color = Color.White)
+                }
+            },
+
+            dismissButton = {
+                TextButton(onClick = { mostrarEditar = false }) {
+                    Text("Cancelar", color = Color.Gray)
+                }
+            }
+        )
+    }
+
+    if (mostrarExcluir) {
+
+        var nomeTurma by remember { mutableStateOf("") }
+        var erro by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { mostrarExcluir = false },
+
+            title = {
+                Text(
+                    text = "Excluir Turma",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Azul
+                )
+            },
+
+            text = {
+                Column {
+                    Text(
+                        text = "Digite o nome da turma que deseja excluir:",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = nomeTurma,
+                        onValueChange = { nomeTurma = it },
+                        placeholder = { Text("Nome da turma") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Azul,
+                            unfocusedBorderColor = Color.LightGray
+                        )
+                    )
+
+                    if (erro) {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Turma não encontrada!",
+                            color = Color.Red,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val turmaEncontrada = turmas.find {
+                            it.nome.equals(nomeTurma, ignoreCase = true)
+                        }
+
+                        if (turmaEncontrada != null) {
+                            turmas.remove(turmaEncontrada)
+                            mostrarExcluir = false
+                        } else {
+                            erro = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Excluir", color = Color.White)
+                }
+            },
+
+            dismissButton = {
+                TextButton(onClick = { mostrarExcluir = false }) {
                     Text("Cancelar", color = Color.Gray)
                 }
             }
