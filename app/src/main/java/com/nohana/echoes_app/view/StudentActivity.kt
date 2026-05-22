@@ -2,10 +2,10 @@ package com.nohana.echoes_app.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
@@ -29,13 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nohana.echoes_app.MainActivity
-import com.nohana.echoes_app.R
-import com.nohana.echoes_app.data.TokenStorage
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.view.screen.HomeScreen
@@ -55,14 +52,14 @@ import com.nohana.echoes_app.viewmodel.factory.UserViewModelFactory
  * - **TopBar** centralizada com o título da aba ativa.
  * - **BottomBar** com três abas de navegação:
  *   - [BottomTab.PROFILE]  → ícone de perfil (esquerda)
- *   - [BottomTab.DEVICES]  → ícone principal (centro, aba inicial)
+ *   - [BottomTab.CLASS]  → ícone principal (centro, aba inicial)
  *   - [BottomTab.SETTINGS] → ícone de configurações (direita)
  *
  * O logout chama [AuthViewModel.logout] e redireciona para [MainActivity].
  * A validação de token garante que sessões expiradas retornem ao login.
  */
 @OptIn(ExperimentalMaterial3Api::class)
-class UserInfoActivity : ComponentActivity() {
+class StudentActivity : ComponentActivity() {
 
     /**
      * Representa as abas disponíveis na BottomBar.
@@ -72,7 +69,7 @@ class UserInfoActivity : ComponentActivity() {
      */
     private enum class BottomTab(val label: String, val iconRes: ImageVector) {
         PROFILE("Perfil", Icons.Rounded.Person),
-        DEVICES("Dispositivos", Icons.Rounded.Home),
+        CLASS("Dispositivos", Icons.Rounded.Home),
         SETTINGS("Configurações", Icons.Rounded.Settings)
     }
 
@@ -89,7 +86,7 @@ class UserInfoActivity : ComponentActivity() {
 
         setContent {
             val userInfoState by userViewModel.userState.collectAsState()
-
+            Toast.makeText(this, "Estudante", Toast.LENGTH_LONG).show()
             // ── Efeitos de inicialização ──────────────────────────────────────
             LaunchedEffect(Unit) {
                 authViewModel.validateToken()
@@ -97,7 +94,7 @@ class UserInfoActivity : ComponentActivity() {
             }
 
             // ── Estado de aba selecionada — persiste rotação de tela ──────────
-            var selectedTab by rememberSaveable { mutableStateOf(BottomTab.DEVICES) }
+            var selectedTab by rememberSaveable { mutableStateOf(BottomTab.CLASS) }
 
             Scaffold(
                 // ── TopBar ────────────────────────────────────────────────────
@@ -157,13 +154,13 @@ class UserInfoActivity : ComponentActivity() {
                         val user = (userInfoState as UserInfoState.Success).user
 
                         when (selectedTab) {
-                            BottomTab.DEVICES -> HomeScreen()
+                            BottomTab.CLASS -> HomeScreen()
 
                             BottomTab.PROFILE -> ProfileScreen(
                                 user = user,
                                 onLogout = {
                                     authViewModel.logout()
-                                    startActivity(Intent(this@UserInfoActivity, MainActivity::class.java))
+                                    startActivity(Intent(this@StudentActivity, MainActivity::class.java))
                                     finish()
                                 }
                             )

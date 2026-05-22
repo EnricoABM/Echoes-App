@@ -8,9 +8,9 @@ sealed interface LoginState {
 
     object Login: LoginState
 
-    object ValidToken: LoginState
+    data class ValidToken(val role: String): LoginState
 
-    data class Success(val token: String): LoginState
+    data class Success(val token: String, val role: String): LoginState
 
     data class ValidationError(val emailError: String? = "", val passwordError: String? = ""): LoginState
 

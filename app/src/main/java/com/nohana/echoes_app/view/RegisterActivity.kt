@@ -6,27 +6,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.nohana.echoes_app.MainActivity
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.view.components.TitleComponent
-import com.nohana.echoes_app.view.screen.*
+import com.nohana.echoes_app.view.screen.LoadingScreen
+import com.nohana.echoes_app.view.screen.RegisterScreen
+import com.nohana.echoes_app.view.screen.ValidateCode
 import com.nohana.echoes_app.view.screen.terms.TermsScreen
 import com.nohana.echoes_app.view.state.RegisterState
 import com.nohana.echoes_app.viewmodel.RegisterViewModel
 import com.nohana.echoes_app.viewmodel.factory.RegisterViewModelFactory
 
-/**
- * Activity responsável pelo fluxo completo de registro de novos usuários.
- *
- * Observa o [RegisterViewModel.state] e renderiza a tela correspondente:
- *
- * - [RegisterState.Register] / erros → [RegisterScreen] com links para os termos
- * - [RegisterState.ViewTerms] → [com.nohana.echoes_app.view.screen.terms.TermsScreen] (somente leitura)
- * - [RegisterState.ViewTermsError] → [RegisterScreen] com mensagem de erro
- * - [RegisterState.ValidEmail] / erros de código → [ValidateCode]
- * - [RegisterState.Success] → navega para [MainActivity]
- */
 class RegisterActivity : ComponentActivity() {
 
     private val viewModel: RegisterViewModel by viewModels {
@@ -41,17 +34,25 @@ class RegisterActivity : ComponentActivity() {
 
         setContent {
             val state by viewModel.state.collectAsState()
+            val form by viewModel.form.collectAsState()
 
             Column {
                 TitleComponent("Registro")
 
                 when (val s = state) {
-
-                    // ── Carregando ────────────────────────────────────────────
                     RegisterState.Loading -> LoadingScreen()
 
-                    // ── Formulário de cadastro ────────────────────────────────────────────
                     RegisterState.Register -> RegisterScreen(
+                        name = form.name,
+                        email = form.email,
+                        password = form.password,
+                        confirmPassword = form.confirmPassword,
+                        termsAccepted = form.termsAccepted,
+                        onNameChange = { viewModel.onFormChange(name = it) },
+                        onEmailChange = { viewModel.onFormChange(email = it) },
+                        onPasswordChange = { viewModel.onFormChange(password = it) },
+                        onConfirmPasswordChange = { viewModel.onFormChange(confirmPassword = it) },
+                        onTermsAcceptedChange = { viewModel.onFormChange(termsAccepted = it) },
                         onRegister = viewModel::register,
                         onViewTerms = {
                             startActivity(Intent(this@RegisterActivity, TermsActivity::class.java))
@@ -59,6 +60,16 @@ class RegisterActivity : ComponentActivity() {
                     )
 
                     is RegisterState.RegisterValidationError -> RegisterScreen(
+                        name = form.name,
+                        email = form.email,
+                        password = form.password,
+                        confirmPassword = form.confirmPassword,
+                        termsAccepted = form.termsAccepted,
+                        onNameChange = { viewModel.onFormChange(name = it) },
+                        onEmailChange = { viewModel.onFormChange(email = it) },
+                        onPasswordChange = { viewModel.onFormChange(password = it) },
+                        onConfirmPasswordChange = { viewModel.onFormChange(confirmPassword = it) },
+                        onTermsAcceptedChange = { viewModel.onFormChange(termsAccepted = it) },
                         onRegister = viewModel::register,
                         onViewTerms = {
                             startActivity(Intent(this@RegisterActivity, TermsActivity::class.java))
@@ -71,6 +82,16 @@ class RegisterActivity : ComponentActivity() {
                     )
 
                     is RegisterState.RegisterError -> RegisterScreen(
+                        name = form.name,
+                        email = form.email,
+                        password = form.password,
+                        confirmPassword = form.confirmPassword,
+                        termsAccepted = form.termsAccepted,
+                        onNameChange = { viewModel.onFormChange(name = it) },
+                        onEmailChange = { viewModel.onFormChange(email = it) },
+                        onPasswordChange = { viewModel.onFormChange(password = it) },
+                        onConfirmPasswordChange = { viewModel.onFormChange(confirmPassword = it) },
+                        onTermsAcceptedChange = { viewModel.onFormChange(termsAccepted = it) },
                         onRegister = viewModel::register,
                         onViewTerms = {
                             startActivity(Intent(this@RegisterActivity, TermsActivity::class.java))
@@ -78,7 +99,6 @@ class RegisterActivity : ComponentActivity() {
                         errorMessage = s.message
                     )
 
-                    // ── Termos (tela unificada, somente leitura) ──────────────────────────
                     is RegisterState.ViewTerms -> TermsScreen(
                         termsOfUse = s.termsOfUse,
                         privacyPolicy = s.privacyPolicy,
@@ -86,30 +106,50 @@ class RegisterActivity : ComponentActivity() {
                     )
 
                     is RegisterState.ViewTermsError -> RegisterScreen(
+                        name = form.name,
+                        email = form.email,
+                        password = form.password,
+                        confirmPassword = form.confirmPassword,
+                        termsAccepted = form.termsAccepted,
+                        onNameChange = { viewModel.onFormChange(name = it) },
+                        onEmailChange = { viewModel.onFormChange(email = it) },
+                        onPasswordChange = { viewModel.onFormChange(password = it) },
+                        onConfirmPasswordChange = { viewModel.onFormChange(confirmPassword = it) },
+                        onTermsAcceptedChange = { viewModel.onFormChange(termsAccepted = it) },
                         onRegister = viewModel::register,
                         onViewTerms = viewModel::loadAllTermsForViewing,
                         errorMessage = s.message
                     )
 
-                    // ── Validação 2FA ─────────────────────────────────────────
                     is RegisterState.ValidEmail -> ValidateCode(
-                        email = s.email,
-                        onValidate = viewModel::validateCode
+                        email = form.email,
+                        code = form.code,
+                        onCodeChange = { viewModel.onFormChange(code = it) },
+                        onValidate = { code ->
+                            viewModel.validateCode(form.email, code)
+                        }
                     )
 
                     is RegisterState.CodeValidationError -> ValidateCode(
-                        email = s.email,
-                        onValidate = viewModel::validateCode,
+                        email = form.email,
+                        code = form.code,
+                        onCodeChange = { viewModel.onFormChange(code = it) },
+                        onValidate = { code ->
+                            viewModel.validateCode(form.email, code)
+                        },
                         codeError = s.codeError
                     )
 
                     is RegisterState.CodeError -> ValidateCode(
-                        email = s.email,
-                        onValidate = viewModel::validateCode,
+                        email = form.email,
+                        code = form.code,
+                        onCodeChange = { viewModel.onFormChange(code = it) },
+                        onValidate = { code ->
+                            viewModel.validateCode(form.email, code)
+                        },
                         errorMessage = s.message
                     )
 
-                    // ── Sucesso ───────────────────────────────────────────────
                     RegisterState.Success -> LaunchedEffect(Unit) {
                         startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
                         finish()

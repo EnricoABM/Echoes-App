@@ -14,7 +14,7 @@ class NetworkProvider {
 
     companion object {
         fun getAddress(): String {
-            return "https://echoes.avraham.dev.br/"
+            return "http://10.131.109.139:8080/"
         }
 
         fun getRetrofitInstance(path: String, context: Context): Retrofit {
@@ -27,6 +27,7 @@ class NetworkProvider {
 
             val clientOkHttp = OkHttpClient.Builder()
                 .addInterceptor(logging)
+                .hostnameVerifier { _, _ ->  true}
                 .build()
 
 

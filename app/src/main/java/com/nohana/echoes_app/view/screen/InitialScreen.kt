@@ -28,8 +28,7 @@ import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 @Composable
 fun InitialScreen(
     onLogin: () -> Unit,
-    onRegister: () -> Unit,
-    onServer: () -> Unit
+    onRegister: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -88,20 +87,6 @@ fun InitialScreen(
                         fontSize = 4.em
                     )
                 }
-
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.White,
-                        containerColor = Blue
-                    ),
-                    onClick = onServer
-                ) {
-                    Text(
-                        text = "IP Config",
-                        fontSize = 4.em
-                    )
-                }
             }
         }
     }
@@ -113,8 +98,7 @@ fun ViewInitialScreen() {
     EchoesAppTheme() {
         InitialScreen(
             onLogin = {},
-            onRegister = {},
-            onServer = {}
+            onRegister = {}
         )
     }
 }

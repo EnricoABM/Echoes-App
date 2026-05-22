@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.nohana.echoes_app.data.TokenStorage
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.service.network.AuthNetworkService
+import com.nohana.echoes_app.service.network.UserNetworkService
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 
 class AuthViewModelFactory(
@@ -16,9 +17,10 @@ class AuthViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
         val retrofit = NetworkProvider.Companion.getRetrofitInstance(baseUrl, context)
-        val service = retrofit.create(AuthNetworkService::class.java)
+        val authService = retrofit.create(AuthNetworkService::class.java)
+        val userService = retrofit.create(UserNetworkService::class.java)
         val tokenStorage = TokenStorage(context)
 
-        return AuthViewModel(service, tokenStorage) as T
+        return AuthViewModel(authService, userService, tokenStorage) as T
     }
 }

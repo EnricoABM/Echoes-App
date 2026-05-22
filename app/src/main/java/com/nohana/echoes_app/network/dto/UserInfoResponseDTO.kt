@@ -6,5 +6,7 @@ data class UserInfoResponseDTO(
     @SerializedName("name")
     val name: String,
     @SerializedName("email")
-    val email: String
+    val email: String,
+    @SerializedName("role")
+    val role: String
 )

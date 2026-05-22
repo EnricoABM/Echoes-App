@@ -31,7 +31,7 @@
 
         </activity>
 
-        <activity android:name=".view.UserInfoActivity">
+        <activity android:name=".view.TeacherActivity">
 
         </activity>
 
@@ -45,6 +45,10 @@
 
         </activity>
         <activity android:name=".view.ServerConfigActivity">
+
+        </activity>
+
+        <activity android:name=".view.StudentActivity">
 
         </activity>
 

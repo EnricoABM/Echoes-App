@@ -2,7 +2,6 @@ package com.nohana.echoes_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nohana.echoes_app.network.dto.AcceptTermsRequestDTO
 import com.nohana.echoes_app.network.dto.RegisterRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
 import com.nohana.echoes_app.service.network.RegisterNetworkService
@@ -16,53 +15,50 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-/**
- * ViewModel responsável por todo o fluxo de registro de novos usuários.
- *
- * ## Fluxo de estados
- * 1. [RegisterState.Register] — formulário com checkbox de aceite dos termos.
- * 2. (Opcional) Usuário clica em um link de termos → [loadTermsForViewing]
- *    → [RegisterState.ViewTerms] (somente leitura, sem chamada de aceite).
- * 3. [register] valida campos e o checkbox localmente, depois envia o cadastro.
- * 4. Registro bem-sucedido → [acceptAllTerms] registra a aceitação na API
- *    → [RegisterState.ValidEmail].
- * 5. [validateCode] valida o código 2FA → [RegisterState.Success].
- *
- * @property registerNetworkService Serviço Retrofit para as chamadas de cadastro.
- * @property termsNetworkService    Serviço Retrofit para carregar e aceitar termos.
- */
 class RegisterViewModel(
     private val registerNetworkService: RegisterNetworkService,
     private val termsNetworkService: TermsNetworkService
 ) : ViewModel() {
 
     companion object {
-        /** Tipo do termo de uso exigido no registro. */
         const val TERMS_OF_USE = "TERMS_OF_USE"
-
-        /** Tipo da política de privacidade exigida no registro. */
         const val PRIVACY_POLICY = "PRIVACY_POLICY"
     }
 
     private val _state = MutableStateFlow<RegisterState>(RegisterState.Register)
-
-    /** Estado atual do fluxo de registro, observável pela UI. */
     val state = _state.asStateFlow()
 
-    // ── Visualização de termos (somente leitura) ──────────────────────────────
+    private val _form = MutableStateFlow(RegisterForm())
+    val form = _form.asStateFlow()
 
-    /**
-     * Carrega ambos os termos (Termos de Uso e Política de Privacidade)
-     * em paralelo para exibição em uma única tela de leitura.
-     *
-     * Não realiza nenhuma chamada de aceite. Após a leitura, o usuário
-     * retorna ao formulário via [backToRegister].
-     */
+    fun onFormChange(
+        name: String? = null,
+        email: String? = null,
+        password: String? = null,
+        confirmPassword: String? = null,
+        termsAccepted: Boolean? = null,
+        code: String? = null
+    ) {
+        _form.update { current ->
+            current.copy(
+                name = name ?: current.name,
+                email = email ?: current.email,
+                password = password ?: current.password,
+                confirmPassword = confirmPassword ?: current.confirmPassword,
+                termsAccepted = termsAccepted ?: current.termsAccepted,
+                code = code ?: current.code
+            )
+        }
+    }
+
+    fun backToRegister() {
+        _state.update { RegisterState.Register }
+    }
+
     fun loadAllTermsForViewing() {
         viewModelScope.launch {
             _state.update { RegisterState.Loading }
             try {
-                // Carrega os dois termos em paralelo com async
                 val termsOfUseDeferred = async { termsNetworkService.getTerms(TERMS_OF_USE) }
                 val privacyPolicyDeferred = async { termsNetworkService.getTerms(PRIVACY_POLICY) }
 
@@ -91,30 +87,6 @@ class RegisterViewModel(
         }
     }
 
-    /**
-     * Retorna ao estado [RegisterState.Register] após o usuário fechar
-     * a tela de visualização dos termos.
-     */
-    fun backToRegister() {
-        _state.update { RegisterState.Register }
-    }
-
-    // ── Registro ──────────────────────────────────────────────────────────────
-
-    /**
-     * Ponto de entrada do fluxo de registro.
-     *
-     * Valida os campos do formulário e o checkbox de aceite dos termos
-     * localmente. Se tudo for válido, envia o cadastro à API.
-     * O servidor registra automaticamente a aceitação dos termos
-     * ao criar o usuário — nenhuma chamada adicional é necessária.
-     *
-     * @param name            Nome completo do usuário.
-     * @param email           E-mail do usuário.
-     * @param password        Senha escolhida.
-     * @param confirmPassword Confirmação da senha.
-     * @param termsAccepted   Indica se o usuário marcou o checkbox de aceite.
-     */
     fun register(
         name: String,
         email: String,
@@ -122,12 +94,23 @@ class RegisterViewModel(
         confirmPassword: String,
         termsAccepted: Boolean
     ) {
+        _form.update {
+            it.copy(
+                name = name,
+                email = email,
+                password = password,
+                confirmPassword = confirmPassword,
+                termsAccepted = termsAccepted
+            )
+        }
+
         val nameError = FieldValidatorService.validateName(name)
         val emailError = FieldValidatorService.validateEmail(email)
         val passwordError = FieldValidatorService.validatePassword(password)
         val confirmPasswordError =
             FieldValidatorService.validatePasswordConfirmation(password, confirmPassword)
-        val termsError = if (!termsAccepted) "Você deve aceitar os termos para continuar." else null
+        val termsError =
+            if (!termsAccepted) "Você deve aceitar os termos para continuar." else null
 
         if (nameError != null || emailError != null ||
             passwordError != null || confirmPasswordError != null || termsError != null
@@ -150,9 +133,9 @@ class RegisterViewModel(
                 val response = registerNetworkService.register(
                     RegisterRequestDTO(name, email, password, confirmPassword)
                 )
+
                 if (response.isSuccessful) {
-                    // O servidor registra a aceitação dos termos automaticamente.
-                    _state.update { RegisterState.ValidEmail(email) }
+                    _state.update { RegisterState.ValidEmail }
                 } else {
                     _state.update { RegisterState.RegisterError("Erro ao realizar cadastro.") }
                 }
@@ -162,43 +145,12 @@ class RegisterViewModel(
         }
     }
 
-    /**
-     * Registra a aceitação de ambos os tipos de termos na API após um
-     * cadastro bem-sucedido.
-     *
-     * As chamadas são feitas sequencialmente. Falhas nesta etapa não
-     * bloqueiam o fluxo — o usuário ainda é encaminhado para a validação
-     * de e-mail, pois o cadastro já foi criado.
-     *
-     * @param email E-mail do usuário recém-cadastrado.
-     */
-    private suspend fun acceptAllTerms(email: String) {
-        try {
-            termsNetworkService.acceptTerms(AcceptTermsRequestDTO(TERMS_OF_USE))
-            termsNetworkService.acceptTerms(AcceptTermsRequestDTO(PRIVACY_POLICY))
-        } catch (e: IOException) {
-            // Falha silenciosa: o cadastro já foi criado com sucesso.
-            // O aceite pode ser reprocessado em um fluxo posterior se necessário.
-        } finally {
-            _state.update { RegisterState.ValidEmail(email) }
-        }
-    }
-
-    // ── Validação do código 2FA ───────────────────────────────────────────────
-
-    /**
-     * Valida o código de verificação enviado ao e-mail do usuário.
-     *
-     * Valida o formato localmente antes de realizar a chamada de rede.
-     * Em caso de sucesso, transita para [RegisterState.Success].
-     *
-     * @param email E-mail para o qual o código foi enviado.
-     * @param code  Código de 6 dígitos digitado pelo usuário.
-     */
     fun validateCode(email: String, code: String) {
+        _form.update { it.copy(email = email, code = code) }
+
         val codeError = FieldValidatorService.validateCode(code)
         if (codeError != null) {
-            _state.update { RegisterState.CodeValidationError(email, codeError.message) }
+            _state.update { RegisterState.CodeValidationError(codeError.message) }
             return
         }
 
@@ -207,13 +159,29 @@ class RegisterViewModel(
             try {
                 val response = registerNetworkService.validate(TwoFactorRequestDTO(email, code))
                 when (response.code()) {
-                    200 -> _state.update { RegisterState.Success }
-                    400, 401 -> _state.update { RegisterState.CodeError(email, "Código inválido") }
-                    else -> _state.update { RegisterState.CodeError(email, "Erro inesperado") }
+                    200 -> {
+                        _state.update { RegisterState.Success }
+                        _form.update { RegisterForm() }
+                    }
+                    400, 401 -> _state.update {
+                        RegisterState.CodeError("Código inválido")
+                    }
+                    else -> _state.update {
+                        RegisterState.CodeError("Erro inesperado")
+                    }
                 }
             } catch (e: IOException) {
-                _state.update { RegisterState.CodeError(email, "Erro de conexão") }
+                _state.update { RegisterState.CodeError("Erro de conexão") }
             }
         }
     }
 }
+
+data class RegisterForm(
+    val name: String = "",
+    val email: String = "",
+    val password: String = "",
+    val confirmPassword: String = "",
+    val termsAccepted: Boolean = false,
+    val code: String = ""
+)

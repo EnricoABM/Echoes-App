@@ -28,11 +28,6 @@ class MainActivity : ComponentActivity() {
                         startActivity(
                             Intent(baseContext, RegisterActivity::class.java)
                         )
-                    },
-                    onServer = {
-                        startActivity(
-                            Intent(baseContext, ServerConfigActivity::class.java)
-                        )
                     }
                 )
             }

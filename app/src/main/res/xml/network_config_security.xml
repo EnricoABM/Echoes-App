@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-
-    <base-config cleartextTrafficPermitted="false" />
-
+    <!-- Produção: confia na CA pública (comportamento padrão) -->
     <domain-config>
-        <domain includeSubdomains="false">echoes.avraham.dev.br/</domain>
-
+        <domain includeSubdomains="true">echoes.avraham.dev.br</domain>
         <trust-anchors>
-            <certificates src="@raw/meu_servidor"/>
+            <certificates src="system" />
         </trust-anchors>
     </domain-config>
 
+    <!-- Local: confia no certificado autoassinado -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.131.109.139</domain>
+    </domain-config>
 </network-security-config>

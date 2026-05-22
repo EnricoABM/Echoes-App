@@ -2,7 +2,6 @@ package com.nohana.echoes_app.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,17 +11,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.nohana.echoes_app.network.NetworkProvider
-import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.components.TitleComponent
 import com.nohana.echoes_app.view.screen.LoadingScreen
 import com.nohana.echoes_app.view.screen.LoginScreen
 import com.nohana.echoes_app.view.screen.TwoFactorScreen
-import com.nohana.echoes_app.view.state.LoginState.*
+import com.nohana.echoes_app.view.state.LoginState
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
 
-class AuthActivity(): ComponentActivity() {
+class AuthActivity : ComponentActivity() {
 
     private val viewModel: AuthViewModel by viewModels {
         AuthViewModelFactory(
@@ -30,32 +28,45 @@ class AuthActivity(): ComponentActivity() {
             applicationContext
         )
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
             val state by viewModel.loginState.collectAsState()
+            val form by viewModel.form.collectAsState()
 
             LaunchedEffect(Unit) {
                 viewModel.validateToken()
             }
 
             EchoesAppTheme {
-                Column() {
+                Column {
                     TitleComponent("Login")
 
-                    when(val s = state) {
+                    when (val s = state) {
                         LoginState.Login -> {
                             LoginScreen(
-                                onLogin = viewModel::login
+                                email = form.email.orEmpty(),
+                                password = form.password.orEmpty(),
+                                onEmailChange = { viewModel.onFormChange(email = it) },
+                                onPasswordChange = { viewModel.onFormChange(password = it) },
+                                onLogin = { email, password ->
+                                    viewModel.login(email, password)
+                                }
                             )
                         }
+
                         LoginState.Loading -> LoadingScreen()
+
                         is LoginState.Success -> {
-                            LaunchedEffect(state) {
+                            LaunchedEffect(s) {
                                 startActivity(
-                                    Intent(this@AuthActivity, UserInfoActivity::class.java)
+                                    if (s.role == "TEACHER")
+                                        Intent(this@AuthActivity, TeacherActivity::class.java)
+                                    else
+                                        Intent(this@AuthActivity, StudentActivity::class.java)
                                 )
                                 finish()
                             }
@@ -63,30 +74,57 @@ class AuthActivity(): ComponentActivity() {
 
                         is LoginState.TwoFactor -> {
                             TwoFactorScreen(
-                                s.email,
-                                viewModel::sendTwoFactor,
-                                s.error
+                                email = form.email.orEmpty(),
+                                code = form.code.orEmpty(),
+                                onCodeChange = { viewModel.onFormChange(code = it) },
+                                onTwoFactor = { email, code ->
+                                    viewModel.sendTwoFactor(
+                                        form.email.orEmpty(),
+                                        code
+                                    )
+                                },
+                                error = s.error
                             )
                         }
-                        LoginState.ValidToken -> {
-                            LaunchedEffect(state) {
+
+                        is LoginState.ValidToken -> {
+                            LaunchedEffect(s) {
                                 startActivity(
-                                    Intent(this@AuthActivity, UserInfoActivity::class.java)
+                                    if (s.role == "TEACHER")
+                                        Intent(this@AuthActivity, TeacherActivity::class.java)
+                                    else
+                                        Intent(this@AuthActivity, StudentActivity::class.java)
                                 )
                                 finish()
                             }
                         }
 
-                        is LoginState.Error -> LoginScreen(
-                            onLogin = viewModel::login,
-                            s.error
-                        )
+                        is LoginState.Error -> {
+                            LoginScreen(
+                                email = form.email.orEmpty(),
+                                password = form.password.orEmpty(),
+                                onEmailChange = { viewModel.onFormChange(email = it) },
+                                onPasswordChange = { viewModel.onFormChange(password = it) },
+                                onLogin = { email, password ->
+                                    viewModel.login(email, password)
+                                },
+                                error = s.error
+                            )
+                        }
 
-                        is LoginState.ValidationError -> LoginScreen(
-                            onLogin = viewModel::login,
-                            emailError = s.emailError,
-                            passwordError = s.passwordError
-                        )
+                        is LoginState.ValidationError -> {
+                            LoginScreen(
+                                email = form.email.orEmpty(),
+                                password = form.password.orEmpty(),
+                                onEmailChange = { viewModel.onFormChange(email = it) },
+                                onPasswordChange = { viewModel.onFormChange(password = it) },
+                                onLogin = { email, password ->
+                                    viewModel.login(email, password)
+                                },
+                                emailError = s.emailError,
+                                passwordError = s.passwordError
+                            )
+                        }
                     }
                 }
             }
