@@ -6,10 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
-import com.nohana.echoes_app.view.AuthActivity
-import com.nohana.echoes_app.view.RegisterActivity
-import com.nohana.echoes_app.view.ServerConfigActivity
-import com.nohana.echoes_app.view.screen.InitialScreen
+import com.nohana.echoes_app.view.activities.auth.AuthActivity
+import com.nohana.echoes_app.view.activities.auth.RegisterActivity
+import com.nohana.echoes_app.view.screens.InitialScreen
 
 
 class MainActivity : ComponentActivity() {

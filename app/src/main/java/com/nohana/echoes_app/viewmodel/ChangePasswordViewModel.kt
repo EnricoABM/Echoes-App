@@ -7,7 +7,7 @@ import com.nohana.echoes_app.network.dto.ChangePasswordRequestDTO
 import com.nohana.echoes_app.network.dto.ValidatePasswordRequestDTO
 import com.nohana.echoes_app.service.network.PasswordNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
-import com.nohana.echoes_app.view.state.ChangePasswordState
+import com.nohana.echoes_app.view.activities.password.ChangePasswordState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

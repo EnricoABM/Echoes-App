@@ -6,7 +6,7 @@ import com.nohana.echoes_app.network.dto.ForgotPasswordRequestDTO
 import com.nohana.echoes_app.network.dto.ResetPasswordRequestDTO
 import com.nohana.echoes_app.service.network.PasswordNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
-import com.nohana.echoes_app.view.state.ForgotPasswordState
+import com.nohana.echoes_app.view.activities.password.ForgotPasswordState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

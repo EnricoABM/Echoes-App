@@ -27,33 +27,33 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.AuthActivity">
+        <activity android:name=".view.activities.auth.AuthActivity">
 
         </activity>
 
-        <activity android:name=".view.TeacherActivity">
+        <activity android:name=".view.activities.home.TeacherActivity">
 
         </activity>
 
-        <activity android:name=".view.RegisterActivity">
+        <activity android:name=".view.activities.auth.RegisterActivity">
 
         </activity>
-        <activity android:name=".view.PasswordResetActivity">
+        <activity android:name=".view.activities.password.PasswordResetActivity">
 
         </activity>
-        <activity android:name=".view.ChangePasswordActivity">
+        <activity android:name=".view.activities.password.ChangePasswordActivity">
 
         </activity>
-        <activity android:name=".view.ServerConfigActivity">
-
-        </activity>
-
-        <activity android:name=".view.StudentActivity">
+        <activity android:name=".view.activities.server.ServerConfigActivity">
 
         </activity>
 
-        <activity android:name=".view.TermsActivity" />
-        <activity android:name=".view.TermsViewerActivity" />
+        <activity android:name=".view.activities.home.StudentActivity">
+
+        </activity>
+
+        <activity android:name=".view.activities.terms.TermsActivity" />
+        <activity android:name=".view.activities.terms.TermsViewerActivity" />
     </application>
 
 </manifest>

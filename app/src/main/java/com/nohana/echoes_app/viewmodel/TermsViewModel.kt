@@ -3,7 +3,7 @@ package com.nohana.echoes_app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.service.network.TermsNetworkService
-import com.nohana.echoes_app.view.state.TermsActivityState
+import com.nohana.echoes_app.view.activities.terms.TermsActivityState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

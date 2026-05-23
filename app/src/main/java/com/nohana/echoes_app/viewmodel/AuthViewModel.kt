@@ -1,18 +1,16 @@
 package com.nohana.echoes_app.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.data.TokenStorage
-import com.nohana.echoes_app.view.state.LoginState
-import com.nohana.echoes_app.network.NetworkProvider
+import com.nohana.echoes_app.view.activities.auth.LoginState
 import com.nohana.echoes_app.network.dto.LoginRequestDTO
 import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
 import com.nohana.echoes_app.service.network.AuthNetworkService
 import com.nohana.echoes_app.service.network.UserNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
-import com.nohana.echoes_app.view.state.AuthState
+import com.nohana.echoes_app.view.states.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
