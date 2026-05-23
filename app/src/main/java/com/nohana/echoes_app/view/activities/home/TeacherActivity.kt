@@ -38,7 +38,7 @@ import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.view.components.LoadingScreen
 import com.nohana.echoes_app.view.screens.ProfileScreen
 import com.nohana.echoes_app.view.activities.settings.SettingsScreen
-import com.nohana.echoes_app.view.states.UserState
+import com.nohana.echoes_app.view.states.UserEvent
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.UserViewModel
 import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
@@ -84,7 +84,6 @@ class TeacherActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val userInfoState by userViewModel.userState.collectAsState()
 
             // ── Efeitos de inicialização ──────────────────────────────────────
             LaunchedEffect(Unit) {
@@ -92,14 +91,10 @@ class TeacherActivity : ComponentActivity() {
                 userViewModel.getUserInfo()
             }
 
-            Toast.makeText(this, "Professor", Toast.LENGTH_LONG).show()
-
-
             // ── Estado de aba selecionada — persiste rotação de tela ──────────
             var selectedTab by rememberSaveable { mutableStateOf(BottomTab.DEVICES) }
 
             Scaffold(
-                // ── TopBar ────────────────────────────────────────────────────
                 topBar = {
                     CenterAlignedTopAppBar(
                         title = {
@@ -116,8 +111,6 @@ class TeacherActivity : ComponentActivity() {
                         )
                     )
                 },
-
-                // ── BottomBar ─────────────────────────────────────────────────
                 bottomBar = {
                     NavigationBar(containerColor = DarkBlue) {
 
@@ -147,42 +140,72 @@ class TeacherActivity : ComponentActivity() {
                 }
 
             ) { innerPadding ->
+                val uiState by userViewModel.uiState.collectAsState()
 
-                // ── Conteúdo central ──────────────────────────────────────────
-                when (userInfoState) {
-                    UserState.Loading -> LoadingScreen()
+                LaunchedEffect(Unit) {
 
-                    is UserState.Success -> {
-                        val user = (userInfoState as UserState.Success).user
+                    userViewModel.event.collect { event ->
+                        when(event) {
+                            UserEvent.LogoutSuccess -> {
+                                startActivity(
+                                    Intent(
+                                        this@TeacherActivity,
+                                        MainActivity::class.java
+                                    )
+                                )
+                                finish()
+                            }
 
-                        when (selectedTab) {
-                            BottomTab.DEVICES -> HomeScreen()
+                            UserEvent.DeleteAccountSuccess -> {
+                                startActivity(
+                                    Intent(
+                                        this@TeacherActivity,
+                                        MainActivity::class.java
+                                    )
+                                )
+                                finish()
+                            }
 
-                            BottomTab.PROFILE -> ProfileScreen(
-                                user = user,
-                                onLogout = {
-                                    authViewModel.logout()
-                                    startActivity(Intent(this@TeacherActivity, MainActivity::class.java))
-                                    finish()
-                                }
-                            )
-                            BottomTab.SETTINGS -> SettingsScreen(
-                                onLogout = {
-                                    authViewModel.logout()
-                                    startActivity(Intent(this@TeacherActivity, MainActivity::class.java))
-                                    finish()
-                                },
-                                onPrivacy = { },
-                                onProfile = { },
-                                onSecurity = { },
-                                onDeleteAccount = {
-
-                                }
-                            )
+                            is UserEvent.Error -> {
+                                // snackbar
+                            }
                         }
                     }
+                }
 
-                    UserState.Error -> LoadingScreen() // retry automático via LaunchedEffect
+                if (uiState.isLoading && uiState.user == null) {
+                    LoadingScreen()
+                } else {
+                    uiState.user?.let { user ->
+                        when (selectedTab) {
+                            BottomTab.DEVICES -> {
+                                HomeScreen()
+                            }
+
+                            BottomTab.PROFILE -> {
+                                ProfileScreen(
+                                    user = user,
+                                    onLogout = {
+                                        authViewModel.logout()
+                                    }
+                                )
+                            }
+
+                            BottomTab.SETTINGS -> {
+                                SettingsScreen(
+                                    onLogout = {
+                                        authViewModel.logout()
+                                    },
+                                    onPrivacy = { },
+                                    onProfile = { },
+                                    onSecurity = { },
+                                    onDeleteAccount = {
+                                        userViewModel.deleteAccount()
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

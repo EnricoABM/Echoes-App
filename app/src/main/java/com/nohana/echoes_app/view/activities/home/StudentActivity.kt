@@ -38,7 +38,7 @@ import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.view.components.LoadingScreen
 import com.nohana.echoes_app.view.screens.ProfileScreen
 import com.nohana.echoes_app.view.activities.settings.SettingsScreen
-import com.nohana.echoes_app.view.states.UserState
+import com.nohana.echoes_app.view.states.UserEvent
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.UserViewModel
 import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
@@ -84,19 +84,15 @@ class StudentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val userInfoState by userViewModel.userState.collectAsState()
-            Toast.makeText(this, "Estudante", Toast.LENGTH_LONG).show()
-            // ── Efeitos de inicialização ──────────────────────────────────────
             LaunchedEffect(Unit) {
                 authViewModel.validateToken()
                 userViewModel.getUserInfo()
             }
 
-            // ── Estado de aba selecionada — persiste rotação de tela ──────────
             var selectedTab by rememberSaveable { mutableStateOf(BottomTab.CLASS) }
 
             Scaffold(
-                // ── TopBar ────────────────────────────────────────────────────
+
                 topBar = {
                     CenterAlignedTopAppBar(
                         title = {
@@ -114,7 +110,6 @@ class StudentActivity : ComponentActivity() {
                     )
                 },
 
-                // ── BottomBar ─────────────────────────────────────────────────
                 bottomBar = {
                     NavigationBar(containerColor = DarkBlue) {
 
@@ -145,40 +140,76 @@ class StudentActivity : ComponentActivity() {
 
             ) { innerPadding ->
 
-                // ── Conteúdo central ──────────────────────────────────────────
-                when (userInfoState) {
-                    UserState.Loading -> LoadingScreen()
+                val uiState by userViewModel.uiState.collectAsState()
 
-                    is UserState.Success -> {
-                        val user = (userInfoState as UserState.Success).user
+                LaunchedEffect(Unit) {
+                    userViewModel.event.collect { event ->
 
-                        when (selectedTab) {
-                            BottomTab.CLASS -> HomeScreen()
+                        when (event) {
+                            UserEvent.LogoutSuccess -> {
 
-                            BottomTab.PROFILE -> ProfileScreen(
-                                user = user,
-                                onLogout = {
-                                    authViewModel.logout()
-                                    startActivity(Intent(this@StudentActivity, MainActivity::class.java))
-                                    finish()
-                                }
-                            )
+                                startActivity(
+                                    Intent(
+                                        this@StudentActivity,
+                                        MainActivity::class.java
+                                    )
+                                )
 
-                            BottomTab.SETTINGS -> SettingsScreen(
-                                onLogout = {
-                                    authViewModel.logout()
-                                    startActivity(Intent(this@StudentActivity, MainActivity::class.java))
-                                    finish()
-                                },
-                                onPrivacy = { },
-                                onProfile = { },
-                                onSecurity = { },
-                                onDeleteAccount = { }
-                            )
+                                finish()
+                            }
+
+                            UserEvent.DeleteAccountSuccess -> {
+                                startActivity(
+                                    Intent(
+                                        this@StudentActivity,
+                                        MainActivity::class.java
+                                    )
+                                )
+                                finish()
+                            }
+
+                            is UserEvent.Error -> {
+
+                                // snackbar
+                            }
                         }
                     }
+                }
 
-                    UserState.Error -> LoadingScreen() // retry automático via LaunchedEffect
+                if (uiState.isLoading && uiState.user == null) {
+                    LoadingScreen()
+                } else {
+                    uiState.user?.let { user ->
+                        when (selectedTab) {
+
+                            BottomTab.CLASS -> {
+                                HomeScreen()
+                            }
+
+                            BottomTab.PROFILE -> {
+                                ProfileScreen(
+                                    user = user,
+                                    onLogout = {
+                                        authViewModel.logout()
+                                    }
+                                )
+                            }
+
+                            BottomTab.SETTINGS -> {
+                                SettingsScreen(
+                                    onLogout = {
+                                        authViewModel.logout()
+                                    },
+                                    onPrivacy = { },
+                                    onProfile = { },
+                                    onSecurity = { },
+                                    onDeleteAccount = {
+                                        userViewModel.deleteAccount()
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
