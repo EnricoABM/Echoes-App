@@ -27,7 +27,6 @@ class NetworkProvider {
 
             val clientOkHttp = OkHttpClient.Builder()
                 .addInterceptor(logging)
-                .hostnameVerifier { _, _ ->  true}
                 .build()
 
 

@@ -29,7 +29,7 @@ class TermsViewModelFactory(
      * @param extras     Extras fornecidos pelo [ViewModelProvider].
      */
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        val retrofit = NetworkProvider.getRetrofitInstance(baseUrl, context)
+        val retrofit = NetworkProvider.getRetofitWithJwtInterceptor(baseUrl, context)
         val termsService = retrofit.create(TermsNetworkService::class.java)
         return TermsViewModel(termsService) as T
     }
