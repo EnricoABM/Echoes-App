@@ -2,8 +2,7 @@ package com.nohana.echoes_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nohana.echoes_app.network.dto.ForgotPasswordRequestDTO
-import com.nohana.echoes_app.network.dto.ResetPasswordRequestDTO
+import com.nohana.echoes_app.network.dto.PasswordDTO
 import com.nohana.echoes_app.service.network.PasswordNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
 import com.nohana.echoes_app.view.activities.password.ForgotPasswordState
@@ -30,7 +29,7 @@ class PasswordResetViewModel(
         viewModelScope.launch {
             try {
                 _state.update { ForgotPasswordState.Loading }
-                val response = resetPasswordService.forgotPassword(ForgotPasswordRequestDTO(email))
+                val response = resetPasswordService.forgotPassword(PasswordDTO.ForgotPasswordRequest(email))
                 if (response.isSuccessful) {
                     _state.update { ForgotPasswordState.Code(email) }
                 } else {
@@ -62,7 +61,7 @@ class PasswordResetViewModel(
             try {
                 _state.update { ForgotPasswordState.Loading }
                 val response = resetPasswordService.resetPassword(
-                    ResetPasswordRequestDTO(email, code, newPassword, confirmPassword)
+                    PasswordDTO.ResetPasswordRequest(email, code, newPassword, confirmPassword)
                 )
                 when (response.code()) {
                     200  -> _state.update { ForgotPasswordState.Success }

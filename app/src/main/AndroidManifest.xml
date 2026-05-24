@@ -15,7 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EchoesApp">
         <activity
-            android:name=".view.activities.settings.PrivacityActivity"
+            android:name=".view.activities.security.SecurityActivity"
+            android:exported="false"
+            android:label="@string/title_activity_security"
+            android:theme="@style/Theme.EchoesApp" />
+        <activity
+            android:name=".view.activities.settings.PrivacyActivity"
             android:exported="false"
             android:label="@string/title_activity_privacity"
             android:theme="@style/Theme.EchoesApp" />
@@ -30,13 +35,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activities.auth.AuthActivity"></activity>
-        <activity android:name=".view.activities.home.TeacherActivity"></activity>
-        <activity android:name=".view.activities.auth.RegisterActivity"></activity>
-        <activity android:name=".view.activities.password.PasswordResetActivity"></activity>
-        <activity android:name=".view.activities.password.ChangePasswordActivity"></activity>
-        <activity android:name=".view.activities.server.ServerConfigActivity"></activity>
-        <activity android:name=".view.activities.home.StudentActivity"></activity>
+        <activity android:name=".view.activities.auth.AuthActivity" />
+        <activity android:name=".view.activities.home.TeacherActivity" />
+        <activity android:name=".view.activities.auth.RegisterActivity" />
+        <activity android:name=".view.activities.password.PasswordResetActivity" />
+        <activity android:name=".view.activities.password.ChangePasswordActivity" />
+        <activity android:name=".view.activities.server.ServerConfigActivity" />
+        <activity android:name=".view.activities.home.StudentActivity" />
         <activity android:name=".view.activities.terms.TermsActivity" />
         <activity android:name=".view.activities.terms.TermsViewerActivity" />
     </application>

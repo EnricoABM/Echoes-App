@@ -2,7 +2,6 @@ package com.nohana.echoes_app.view.activities.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -11,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,7 +17,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,16 +26,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nohana.echoes_app.MainActivity
 import com.nohana.echoes_app.network.NetworkProvider
 import com.nohana.echoes_app.ui.theme.DarkBlue
+import com.nohana.echoes_app.view.activities.security.SecurityActivity
+import com.nohana.echoes_app.view.activities.settings.PrivacyActivity
 import com.nohana.echoes_app.view.components.LoadingScreen
 import com.nohana.echoes_app.view.screens.ProfileScreen
 import com.nohana.echoes_app.view.activities.settings.SettingsScreen
-import com.nohana.echoes_app.view.states.UserEvent
+import com.nohana.echoes_app.view.components.TitleComponent
+import com.nohana.echoes_app.view.states.UserDeleteEvent
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.UserViewModel
 import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
@@ -68,7 +67,7 @@ class StudentActivity : ComponentActivity() {
      */
     private enum class BottomTab(val label: String, val iconRes: ImageVector) {
         PROFILE("Perfil", Icons.Rounded.Person),
-        CLASS("Dispositivos", Icons.Rounded.Home),
+        CLASS("Turmas", Icons.Rounded.Home),
         SETTINGS("Configurações", Icons.Rounded.Settings)
     }
 
@@ -94,19 +93,8 @@ class StudentActivity : ComponentActivity() {
             Scaffold(
 
                 topBar = {
-                    CenterAlignedTopAppBar(
-                        title = {
-                            Text(
-                                text = selectedTab.label,
-                                fontSize = 22.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = DarkBlue,
-                            titleContentColor = Color.White
-                        )
+                    TitleComponent(
+                        selectedTab.label
                     )
                 },
 
@@ -144,21 +132,8 @@ class StudentActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     userViewModel.event.collect { event ->
-
                         when (event) {
-                            UserEvent.LogoutSuccess -> {
-
-                                startActivity(
-                                    Intent(
-                                        this@StudentActivity,
-                                        MainActivity::class.java
-                                    )
-                                )
-
-                                finish()
-                            }
-
-                            UserEvent.DeleteAccountSuccess -> {
+                            UserDeleteEvent.DeleteAccountSuccess -> {
                                 startActivity(
                                     Intent(
                                         this@StudentActivity,
@@ -167,10 +142,11 @@ class StudentActivity : ComponentActivity() {
                                 )
                                 finish()
                             }
-
-                            is UserEvent.Error -> {
-
+                            is UserDeleteEvent.Error -> {
                                 // snackbar
+                            }
+                            is UserDeleteEvent.DeleteRequestSucess -> {
+
                             }
                         }
                     }
@@ -200,12 +176,18 @@ class StudentActivity : ComponentActivity() {
                                     onLogout = {
                                         authViewModel.logout()
                                     },
-                                    onPrivacy = { },
+                                    onPrivacy = {
+                                        startActivity(
+                                            Intent(this@StudentActivity, PrivacyActivity::class.java)
+                                        )
+                                    },
                                     onProfile = { },
-                                    onSecurity = { },
-                                    onDeleteAccount = {
-                                        userViewModel.deleteAccount()
-                                    }
+                                    onSecurity = {
+                                        startActivity(
+                                            Intent(this@StudentActivity, SecurityActivity::class.java)
+                                        )
+                                    },
+                                    onDeleteAccount = userViewModel::deleteAccount
                                 )
                             }
                         }

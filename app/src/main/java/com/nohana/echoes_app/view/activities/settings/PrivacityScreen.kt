@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +27,9 @@ import com.nohana.echoes_app.view.components.TitleComponent
 fun PrivacityScreen(
     onOpenTerms: () -> Unit,
     onRevokeTerms: () -> Unit,
-    onExportData: () -> Unit
+    onExportData: () -> Unit,
+    onBackFunction: () -> Unit,
+    snackbar: SnackbarHostState
 ) {
 
     var showRevokeDialog by remember {
@@ -36,8 +39,7 @@ fun PrivacityScreen(
     ConfirmationDialog(
         showDialog = showRevokeDialog,
         title = "Revogar Termos",
-        message =
-            "Tem certeza que deseja revogar os termos aceitos?\n\nIsso poderá impedir o uso do aplicativo.",
+        message = "Tem certeza que deseja revogar os termos aceitos?\n\nIsso poderá impedir o uso do aplicativo.",
         confirmText = "Revogar",
         confirmColor = Color.Red,
         onConfirm = {
@@ -52,8 +54,12 @@ fun PrivacityScreen(
     Scaffold(
         topBar = {
             TitleComponent(
-                text = "Privacidade"
+                text = "Privacidade",
+                backFunction = onBackFunction
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbar)
         }
     ) { padding ->
         Column(
@@ -95,6 +101,7 @@ fun PrivacityScreen(
                         tint = Color.Red
                     )
                 },
+                textColor = Color.Red,
                 onClick = {
                     showRevokeDialog = true
                 }
@@ -105,12 +112,19 @@ fun PrivacityScreen(
 
 @Preview
 @Composable
-fun PrivacityScreenPreview() {
-    EchoesAppTheme() {
+fun PrivacyScreenPreview() {
+
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
+    EchoesAppTheme {
         PrivacityScreen(
-            onExportData = { },
+            onOpenTerms = { },
             onRevokeTerms = { },
-            onOpenTerms = { }
+            onExportData = { },
+            onBackFunction = { },
+            snackbar = snackbarHostState
         )
     }
 }

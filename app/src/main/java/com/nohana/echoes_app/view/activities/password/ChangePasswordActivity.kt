@@ -32,7 +32,9 @@ class ChangePasswordActivity : ComponentActivity() {
 
             EchoesAppTheme {
                 Column {
-                    TitleComponent("Alterar Senha")
+                    TitleComponent(
+                        "Alterar Senha",
+                    )
 
                     when (val s = state) {
                         is ChangePasswordState.CurrentPassword -> {

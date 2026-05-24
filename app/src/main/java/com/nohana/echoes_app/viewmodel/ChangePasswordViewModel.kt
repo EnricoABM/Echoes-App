@@ -3,8 +3,7 @@ package com.nohana.echoes_app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.data.TokenStorage
-import com.nohana.echoes_app.network.dto.ChangePasswordRequestDTO
-import com.nohana.echoes_app.network.dto.ValidatePasswordRequestDTO
+import com.nohana.echoes_app.network.dto.PasswordDTO
 import com.nohana.echoes_app.service.network.PasswordNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
 import com.nohana.echoes_app.view.activities.password.ChangePasswordState
@@ -39,7 +38,7 @@ class ChangePasswordViewModel(
                 val token = tokenStorage.getToken()
                 val response = passwordNetworkService.validatePassword(
                     "Bearer $token",
-                    ValidatePasswordRequestDTO(currentPassword)
+                    PasswordDTO.ValidatePasswordRequest(currentPassword)
                 )
                 when (response.code()) {
                     200 -> {
@@ -92,7 +91,7 @@ class ChangePasswordViewModel(
                 val token = tokenStorage.getToken()
                 val response = passwordNetworkService.changePassword(
                     "Bearer " + token,
-                    ChangePasswordRequestDTO(
+                    PasswordDTO.ChangePasswordRequest(
                         token = current.token,
                         newPassword = newPassword,
                         confirmPassword = confirmPassword

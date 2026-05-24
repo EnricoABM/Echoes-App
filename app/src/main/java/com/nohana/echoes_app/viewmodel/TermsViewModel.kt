@@ -4,12 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.service.network.TermsNetworkService
 import com.nohana.echoes_app.view.activities.terms.TermsActivityState
+import com.nohana.echoes_app.view.states.TermsEvent
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 /**
  * ViewModel responsável por carregar os termos disponíveis no sistema
@@ -27,9 +31,11 @@ class TermsViewModel(
     }
 
     private val _state = MutableStateFlow<TermsActivityState>(TermsActivityState.Loading)
-
-    /** Estado atual, observável pela UI. */
     val state = _state.asStateFlow()
+
+
+    private val _event = MutableSharedFlow<TermsEvent>()
+    val event = _event.asSharedFlow()
 
     init {
         loadTerms()
@@ -68,6 +74,28 @@ class TermsViewModel(
                 _state.update {
                     TermsActivityState.Error("Erro de conexão.")
                 }
+            }
+        }
+    }
+
+    /**
+     * Revoga os termos aceitos pelo usuário.
+     *
+     * Emite [TermsEvent.SucessRevokeTerms] em caso de sucesso.
+     * Emite [TermsEvent.Error] em caso de falha de conexão.
+     * */
+    fun revokeTerms() {
+        viewModelScope.launch {
+            try {
+                val response = termsNetworkService.revokeTerms()
+
+                if (response.isSuccessful) {
+                    _event.emit(TermsEvent.SuccessRevokeTerms)
+                } else {
+                    _event.emit(TermsEvent.Error("Não foi possível revogar os termos, tente novamente mais tarde."))
+                }
+            } catch (e: SocketTimeoutException) {
+                _event.emit(TermsEvent.Error("Erro de Conexão, verifique sua conexão"))
             }
         }
     }

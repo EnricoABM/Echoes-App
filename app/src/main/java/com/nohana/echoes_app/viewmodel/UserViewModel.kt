@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.data.TokenStorage
 import com.nohana.echoes_app.model.User
+import com.nohana.echoes_app.network.dto.UserDTO
 import com.nohana.echoes_app.service.network.UserNetworkService
-import com.nohana.echoes_app.view.states.UserEvent
+import com.nohana.echoes_app.view.states.UserDeleteEvent
 import com.nohana.echoes_app.view.states.UserUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 class UserViewModel(
     private val userNetworkService: UserNetworkService,
@@ -27,7 +29,7 @@ class UserViewModel(
         _uiState.asStateFlow()
 
     private val _event =
-        MutableSharedFlow<UserEvent>()
+        MutableSharedFlow<UserDeleteEvent>()
     val event =
         _event.asSharedFlow()
 
@@ -70,7 +72,7 @@ class UserViewModel(
                     }
 
                     _event.emit(
-                        UserEvent.Error(
+                        UserDeleteEvent.Error(
                             "Erro ao carregar usuário"
                         )
                     )
@@ -86,7 +88,7 @@ class UserViewModel(
                 }
 
                 _event.emit(
-                    UserEvent.Error(
+                    UserDeleteEvent.Error(
                         "Erro de conexão"
                     )
                 )
@@ -94,7 +96,7 @@ class UserViewModel(
         }
     }
 
-    fun deleteAccount() {
+    fun deleteAccount(code: String) {
 
         viewModelScope.launch {
             try {
@@ -102,20 +104,18 @@ class UserViewModel(
                     it.copy(isLoading = true)
                 }
 
-                val response = userNetworkService.deleteAccount()
+                val response = userNetworkService.deleteAccount(
+                    UserDTO.ConfirmDeleteAccountRequest(code)
+                )
 
                 if (response.isSuccessful) {
-
                     tokenStorage.setToken("")
-
                     _event.emit(
-                        UserEvent.DeleteAccountSuccess
+                        UserDeleteEvent.DeleteAccountSuccess
                     )
-
                 } else {
-
                     _event.emit(
-                        UserEvent.Error(
+                        UserDeleteEvent.Error(
                             "Erro ao excluir conta"
                         )
                     )
@@ -124,16 +124,43 @@ class UserViewModel(
             } catch (e: IOException) {
 
                 _event.emit(
-                    UserEvent.Error(
+                    UserDeleteEvent.Error(
                         "Erro de conexão"
                     )
                 )
 
             } finally {
-
                 _uiState.update {
                     it.copy(isLoading = false)
                 }
+            }
+        }
+    }
+
+    fun deleteRequest() {
+        viewModelScope.launch {
+            try {
+                val response = userNetworkService.deleteRequest()
+
+                if (response.isSuccessful) {
+                    _event.emit(
+                        UserDeleteEvent.DeleteRequestSucess
+                    )
+                } else {
+                    _event.emit(
+                        UserDeleteEvent.Error(
+                            "Não foi possivel enviar o codigo de Verificação.\n\n" +
+                            "Tente novamente mais tarde."
+                        )
+                    )
+                }
+            } catch (e: SocketTimeoutException) {
+                _event.emit(
+                    UserDeleteEvent.Error(
+                        "Erro de Conexao.\n\n" +
+                        "Verifique sua conexão."
+                    )
+                )
             }
         }
     }

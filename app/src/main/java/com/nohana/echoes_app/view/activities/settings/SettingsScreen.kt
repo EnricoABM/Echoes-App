@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.components.ConfirmationDialog
+import com.nohana.echoes_app.view.components.TextDialog
 import com.nohana.echoes_app.view.components.TitleComponent
 
 /**
@@ -37,29 +38,8 @@ fun SettingsScreen(
     onPrivacy: () -> Unit,
     onSecurity: () -> Unit,
     onLogout: () -> Unit,
-    onDeleteAccount: () -> Unit
+    onDeleteAccount: (code: String) -> Unit
 ) {
-
-    var showDeleteDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ConfirmationDialog(
-        showDialog = showDeleteDialog,
-        title = "Excluir Conta",
-        message = "Tem certeza que deseja excluir sua conta?\n\nEssa ação não poderá ser desfeita.",
-        confirmText = "Excluir",
-        confirmColor = Color.Red,
-
-        onConfirm = {
-            showDeleteDialog = false
-            onDeleteAccount()
-        },
-
-        onDismiss = {
-            showDeleteDialog = false
-        }
-    )
 
     var showLogoutDialog by remember {
         mutableStateOf(false)
@@ -138,24 +118,8 @@ fun SettingsScreen(
                     showLogoutDialog = true
                 }
             )
-
-            SettingsItem(
-                title = "Excluir Conta",
-                textColor = Color.Red,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                },
-                onClick = {
-                    showDeleteDialog = true
-                }
-            )
         }
     }
-
 }
 
 @Preview()

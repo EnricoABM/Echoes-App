@@ -2,7 +2,6 @@ package com.nohana.echoes_app.view.activities.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -38,7 +37,7 @@ import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.view.components.LoadingScreen
 import com.nohana.echoes_app.view.screens.ProfileScreen
 import com.nohana.echoes_app.view.activities.settings.SettingsScreen
-import com.nohana.echoes_app.view.states.UserEvent
+import com.nohana.echoes_app.view.states.UserDeleteEvent
 import com.nohana.echoes_app.viewmodel.AuthViewModel
 import com.nohana.echoes_app.viewmodel.UserViewModel
 import com.nohana.echoes_app.viewmodel.factory.AuthViewModelFactory
@@ -139,14 +138,14 @@ class TeacherActivity : ComponentActivity() {
                     }
                 }
 
-            ) { innerPadding ->
+            ) { padding ->
                 val uiState by userViewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
 
                     userViewModel.event.collect { event ->
                         when(event) {
-                            UserEvent.LogoutSuccess -> {
+                            UserDeleteEvent.DeleteAccountSuccess -> {
                                 startActivity(
                                     Intent(
                                         this@TeacherActivity,
@@ -156,18 +155,11 @@ class TeacherActivity : ComponentActivity() {
                                 finish()
                             }
 
-                            UserEvent.DeleteAccountSuccess -> {
-                                startActivity(
-                                    Intent(
-                                        this@TeacherActivity,
-                                        MainActivity::class.java
-                                    )
-                                )
-                                finish()
-                            }
-
-                            is UserEvent.Error -> {
+                            is UserDeleteEvent.Error -> {
                                 // snackbar
+                            }
+                            is UserDeleteEvent.DeleteRequestSucess -> {
+
                             }
                         }
                     }
@@ -199,9 +191,7 @@ class TeacherActivity : ComponentActivity() {
                                     onPrivacy = { },
                                     onProfile = { },
                                     onSecurity = { },
-                                    onDeleteAccount = {
-                                        userViewModel.deleteAccount()
-                                    }
+                                    onDeleteAccount = userViewModel::deleteAccount
                                 )
                             }
                         }

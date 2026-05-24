@@ -2,8 +2,7 @@ package com.nohana.echoes_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nohana.echoes_app.network.dto.RegisterRequestDTO
-import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
+import com.nohana.echoes_app.network.dto.AuthDTO
 import com.nohana.echoes_app.service.network.RegisterNetworkService
 import com.nohana.echoes_app.service.network.TermsNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
@@ -131,7 +130,7 @@ class RegisterViewModel(
             _state.update { RegisterState.Loading }
             try {
                 val response = registerNetworkService.register(
-                    RegisterRequestDTO(name, email, password, confirmPassword)
+                    AuthDTO.RegisterRequest(name, email, password, confirmPassword)
                 )
 
                 if (response.isSuccessful) {
@@ -157,7 +156,7 @@ class RegisterViewModel(
         viewModelScope.launch {
             _state.update { RegisterState.Loading }
             try {
-                val response = registerNetworkService.validate(TwoFactorRequestDTO(email, code))
+                val response = registerNetworkService.validate(AuthDTO.TwoFactorRequest(email, code))
                 when (response.code()) {
                     200 -> {
                         _state.update { RegisterState.Success }

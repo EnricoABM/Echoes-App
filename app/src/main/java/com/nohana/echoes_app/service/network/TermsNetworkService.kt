@@ -36,4 +36,14 @@ interface TermsNetworkService {
      */
     @POST("/api/terms/accept")
     suspend fun acceptTerms(@Body dto: AcceptTermsRequestDTO): Response<TermsResponseDTO>
+
+    /**
+     * Revoga a aceitação dos termos vigentes pelo usuario.
+     *
+     * `POST /api/terms/revoke`
+     *
+     * @return [Response] com corpo vazio.
+     * */
+    @POST("/api/terms/revoke")
+    suspend fun revokeTerms(): Response<Void>
 }

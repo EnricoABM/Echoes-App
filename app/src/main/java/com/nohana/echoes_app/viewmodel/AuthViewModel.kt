@@ -4,9 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nohana.echoes_app.data.TokenStorage
+import com.nohana.echoes_app.network.dto.AuthDTO
 import com.nohana.echoes_app.view.activities.auth.LoginState
-import com.nohana.echoes_app.network.dto.LoginRequestDTO
-import com.nohana.echoes_app.network.dto.TwoFactorRequestDTO
 import com.nohana.echoes_app.service.network.AuthNetworkService
 import com.nohana.echoes_app.service.network.UserNetworkService
 import com.nohana.echoes_app.service.validation.FieldValidatorService
@@ -68,7 +67,7 @@ class AuthViewModel(
         viewModelScope.launch {
             try {
                 _loginState.update { LoginState.Loading }
-                val response = authNetworkService.login(LoginRequestDTO(email, password))
+                val response = authNetworkService.login(AuthDTO.LoginRequest(email, password))
 
                 if (response.isSuccessful) {
                     _loginState.update { LoginState.TwoFactor(email) }
@@ -98,7 +97,7 @@ class AuthViewModel(
             try {
                 _loginState.update { LoginState.Loading }
                 val response = authNetworkService.validate2fa(
-                    TwoFactorRequestDTO(email, code)
+                    AuthDTO.TwoFactorRequest(email, code)
                 )
 
                 when (response.code()) {
