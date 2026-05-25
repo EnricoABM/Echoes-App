@@ -45,7 +45,6 @@
         <activity android:name=".view.activities.auth.RegisterActivity" />
         <activity android:name=".view.activities.password.PasswordResetActivity" />
         <activity android:name=".view.activities.password.ChangePasswordActivity" />
-        <activity android:name=".view.activities.server.ServerConfigActivity" />
         <activity android:name=".view.activities.home.StudentActivity" />
         <activity android:name=".view.activities.terms.TermsActivity" />
         <activity android:name=".view.activities.terms.TermsViewerActivity" />

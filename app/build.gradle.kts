@@ -65,4 +65,5 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.datastore:datastore-preferences-core:1.2.1")
+    implementation("androidx.security:security-crypto:1.0.0")
 }

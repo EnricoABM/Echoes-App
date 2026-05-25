@@ -1,6 +1,10 @@
 package com.nohana.echoes_app.data
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
+import android.health.connect.datatypes.ActiveCaloriesBurnedRecord
+import android.os.Build
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -8,43 +12,48 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.nohana.echoes_app.security.Crypto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlin.apply
 
-val Context.dataStorage: DataStore<Preferences> by preferencesDataStore(name = "token")
 class TokenStorage(private val context: Context) {
 
-    companion object {
-        val TOKEN = stringPreferencesKey("jwt_token")
+    private val JWT_KEY = "jwt"
+    private val sharedPreferences: SharedPreferences by lazy {
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+        EncryptedSharedPreferences.create(
+            "token_storage",
+            masterKeyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
-    suspend fun setToken(token: String) {
-        context.dataStorage.edit { prefs ->
-            prefs[TOKEN] = Crypto.encrypt(token)
-        }
+    fun setToken(token: String) {
+        sharedPreferences
+            .edit()
+            .putString(JWT_KEY, token)
+            .apply()
     }
 
-    val token: Flow<String?> = context.dataStorage.data.map { preferences ->
-        val encrypted = preferences[TOKEN]
-        if (encrypted.isNullOrEmpty()) {
-            null
-        } else {
-            try {
-                Crypto.decrypted(encrypted)
-            } catch (e: Exception) {
-                null
-            }
-        }
+    fun getToken(): String? {
+        val token = sharedPreferences.getString(JWT_KEY, null)
+        return token;
     }
 
-    suspend fun getToken(): String? {
-        return token.first()
+    fun clear() {
+        sharedPreferences
+            .edit()
+            .remove(JWT_KEY)
+            .apply()
     }
 }
-
-
 
 
 

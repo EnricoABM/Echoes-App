@@ -3,7 +3,6 @@ package com.nohana.echoes_app.network.interceptor
 import android.content.Context
 import androidx.compose.runtime.collectAsState
 import com.nohana.echoes_app.data.TokenStorage
-import com.nohana.echoes_app.data.dataStorage
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

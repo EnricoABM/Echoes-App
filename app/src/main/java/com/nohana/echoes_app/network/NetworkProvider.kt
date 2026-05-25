@@ -1,7 +1,6 @@
 package com.nohana.echoes_app.network
 
 import android.content.Context
-import com.nohana.echoes_app.data.ServerStorage
 import com.nohana.echoes_app.network.interceptor.JwtHeaderInterceptor
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
@@ -26,7 +25,7 @@ class NetworkProvider {
             }
 
             val clientOkHttp = OkHttpClient.Builder()
-                .addInterceptor(logging)
+                // .addInterceptor(logging)
                 .build()
 
 
@@ -46,7 +45,7 @@ class NetworkProvider {
             }
 
             val clientOkHttp = OkHttpClient.Builder()
-                .addInterceptor(logging)
+                // .addInterceptor(logging)
                 .addInterceptor(jwtInteceptor)
                 .build()
 
