@@ -3,10 +3,15 @@ package com.nohana.echoes_app.view.activities.auth
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,16 +28,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import com.nohana.echoes_app.R
 import com.nohana.echoes_app.ui.theme.DarkBlue
 import com.nohana.echoes_app.ui.theme.EchoesAppTheme
 import com.nohana.echoes_app.view.activities.password.PasswordResetActivity
+import com.nohana.echoes_app.view.components.TextWithLink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,8 +85,10 @@ fun LoginScreen(
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
                     unfocusedLabelColor = Color.Black,
                     focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
                 )
             )
 
@@ -94,18 +106,34 @@ fun LoginScreen(
                 supportingText = if (passwordError != null) {
                     { Text(passwordError, color = MaterialTheme.colorScheme.error) }
                 } else null,
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
+                )
             )
 
-            TextButton(
-                onClick = {
-                    context.startActivity(
-                        Intent(context, PasswordResetActivity::class.java)
-                    )
-                }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Esqueceu a Senha?")
+                TextWithLink(
+                    prefixText = "Esqueceu a senha? ",
+                    linkText = "Redifinir.",
+                    onClick = {
+                        context.startActivity(
+                            Intent(context, PasswordResetActivity::class.java)
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(1.dp))
+
             }
+
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -169,7 +197,14 @@ fun TwoFactorScreen(
                 ),
                 placeholder = { Text("Digite o código de 6 dígitos") },
                 isError = error.isNotBlank(),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
+                )
             )
 
             Spacer(modifier = Modifier.height(6.dp))

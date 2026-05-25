@@ -51,7 +51,14 @@ fun ChangePasswordCurrentScreen(
                 isError = errorMessage.isNotBlank() || passwordError != null,
                 supportingText = if (passwordError != null) {
                     { Text(text = passwordError, color = MaterialTheme.colorScheme.error) }
-                } else null
+                } else null,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
+                )
             )
 
             if (errorMessage.isNotBlank()) {
@@ -109,7 +116,14 @@ fun ChangePasswordNewScreen(
                 isError = errorMessage.isNotBlank() || newPasswordError != null,
                 supportingText = if (newPasswordError != null) {
                     { Text(newPasswordError, color = MaterialTheme.colorScheme.error) }
-                } else null
+                } else null,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
+                )
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -123,7 +137,14 @@ fun ChangePasswordNewScreen(
                 isError = errorMessage.isNotBlank() || confirmPasswordError != null,
                 supportingText = if (confirmPasswordError != null) {
                     { Text(confirmPasswordError, color = MaterialTheme.colorScheme.error) }
-                } else null
+                } else null,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
+                )
             )
 
             if (errorMessage.isNotBlank()) {
@@ -139,7 +160,7 @@ fun ChangePasswordNewScreen(
                 contentColor = Color.White
             )
         ) {
-            Text(text = "Alterar senha", fontSize = 4.em)
+            Text(text = "Alterar Senha", fontSize = 4.em)
         }
     }
 }

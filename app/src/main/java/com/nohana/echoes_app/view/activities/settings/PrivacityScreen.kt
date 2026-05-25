@@ -80,7 +80,7 @@ fun PrivacityScreen(
                 onClick = onOpenTerms
             )
 
-            SettingsItem(
+            /* SettingsItem(
                 title = "Exportar Dados",
                 icon = {
                     Icon(
@@ -90,7 +90,7 @@ fun PrivacityScreen(
                     )
                 },
                 onClick = onExportData
-            )
+            ) */
 
             SettingsItem(
                 title = "Revogar Termos",

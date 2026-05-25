@@ -34,7 +34,6 @@ import com.nohana.echoes_app.view.components.TitleComponent
  */
 @Composable
 fun SettingsScreen(
-    onProfile: () -> Unit,
     onPrivacy: () -> Unit,
     onSecurity: () -> Unit,
     onLogout: () -> Unit,
@@ -71,17 +70,6 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-
-            SettingsItem(
-                title = "Perfil",
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = null
-                    )
-                },
-                onClick = onProfile
-            )
 
             SettingsItem(
                 title = "Privacidade",
@@ -131,7 +119,6 @@ fun SettingsScreenPreview() {
         SettingsScreen(
             onLogout = { },
             onPrivacy = { },
-            onProfile = { },
             onSecurity = { },
             onDeleteAccount = { }
         )

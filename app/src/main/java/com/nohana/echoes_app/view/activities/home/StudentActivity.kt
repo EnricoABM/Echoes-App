@@ -164,10 +164,7 @@ class StudentActivity : ComponentActivity() {
 
                             BottomTab.PROFILE -> {
                                 ProfileScreen(
-                                    user = user,
-                                    onLogout = {
-                                        authViewModel.logout()
-                                    }
+                                    user = user
                                 )
                             }
 
@@ -175,13 +172,18 @@ class StudentActivity : ComponentActivity() {
                                 SettingsScreen(
                                     onLogout = {
                                         authViewModel.logout()
+
+                                        startActivity(
+                                            Intent(this@StudentActivity, MainActivity::class.java)
+                                        )
+
+                                        finish()
                                     },
                                     onPrivacy = {
                                         startActivity(
                                             Intent(this@StudentActivity, PrivacyActivity::class.java)
                                         )
                                     },
-                                    onProfile = { },
                                     onSecurity = {
                                         startActivity(
                                             Intent(this@StudentActivity, SecurityActivity::class.java)

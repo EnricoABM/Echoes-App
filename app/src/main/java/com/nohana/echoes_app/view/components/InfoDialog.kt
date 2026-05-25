@@ -4,6 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import com.nohana.echoes_app.ui.theme.DarkBlue
 
 @Composable
 fun InfoDialog(
@@ -26,7 +27,10 @@ fun InfoDialog(
             TextButton(
                 onClick = onDismiss
             ) {
-                Text(buttonText)
+                Text(
+                    text = buttonText,
+                    color = DarkBlue
+                )
             }
         }
     )

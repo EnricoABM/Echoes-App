@@ -15,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EchoesApp">
         <activity
+            android:name=".view.activities.reactive.ReactivityAccountActivity"
+            android:exported="false"
+            android:label="@string/title_activity_reaccount"
+            android:theme="@style/Theme.EchoesApp" />
+        <activity
             android:name=".view.activities.security.SecurityActivity"
             android:exported="false"
             android:label="@string/title_activity_security"

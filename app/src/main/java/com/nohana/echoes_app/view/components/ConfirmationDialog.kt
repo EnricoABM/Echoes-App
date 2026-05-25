@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.nohana.echoes_app.ui.theme.DarkBlue
 
 @Composable
 fun ConfirmationDialog(
@@ -29,7 +30,9 @@ fun ConfirmationDialog(
         },
 
         text = {
-            Text(text = message)
+            Text(
+                text = message
+            )
         },
 
         confirmButton = {
@@ -49,7 +52,10 @@ fun ConfirmationDialog(
             TextButton(
                 onClick = onDismiss
             ) {
-                Text(text = dismissText)
+                Text(
+                    text = dismissText,
+                    color = DarkBlue
+                )
             }
         }
     )

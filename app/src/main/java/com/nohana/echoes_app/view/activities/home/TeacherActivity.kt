@@ -176,10 +176,7 @@ class TeacherActivity : ComponentActivity() {
 
                             BottomTab.PROFILE -> {
                                 ProfileScreen(
-                                    user = user,
-                                    onLogout = {
-                                        authViewModel.logout()
-                                    }
+                                    user = user
                                 )
                             }
 
@@ -189,7 +186,6 @@ class TeacherActivity : ComponentActivity() {
                                         authViewModel.logout()
                                     },
                                     onPrivacy = { },
-                                    onProfile = { },
                                     onSecurity = { },
                                     onDeleteAccount = userViewModel::deleteAccount
                                 )

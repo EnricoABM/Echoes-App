@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.nohana.echoes_app.ui.theme.DarkBlue
 
 @Composable
 fun TextDialog(
@@ -51,7 +53,14 @@ fun TextDialog(
                     label = {
                         Text("Código")
                     },
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        unfocusedLabelColor = Color.Black,
+                        focusedLabelColor = Color.Black,
+                        focusedBorderColor = DarkBlue
+                    )
                 )
             }
         },
@@ -73,7 +82,10 @@ fun TextDialog(
             TextButton(
                 onClick = onDismiss
             ) {
-                Text(dismissText)
+                Text(
+                    text = dismissText,
+                    color = DarkBlue
+                )
             }
         }
     )

@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -40,10 +42,8 @@ import com.nohana.echoes_app.view.activities.password.ChangePasswordActivity
  */
 @Composable
 fun ProfileScreen(
-    user: User,
-    onLogout: () -> Unit
+    user: User
 ) {
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -63,53 +63,44 @@ fun ProfileScreen(
         // ── Dados do usuário ──────────────────────────────────────────────────
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text("Nome", style = MaterialTheme.typography.labelMedium)
-            TextField(
-                onValueChange = {},
-                readOnly = true,
-                value = user.name
-            )
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text("E-mail", style = MaterialTheme.typography.labelMedium)
-            TextField(
-                onValueChange = {},
-                readOnly = true,
-                value = user.email
-            )
-        }
-
-        // ── Ações ─────────────────────────────────────────────────────────────
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                modifier = Modifier.width(220.dp),
-                onClick = {
-                    context.startActivity(Intent(context, ChangePasswordActivity::class.java))
+            OutlinedTextField(
+                label = {
+                    Text("Nome", style = MaterialTheme.typography.labelMedium)
                 },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkBlue,
-                    contentColor = Color.White
+                onValueChange = {},
+                readOnly = true,
+                value = user.name,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
                 )
-            ) {
-                Text("Alterar a Senha")
-            }
+            )
 
-            Button(
-                modifier = Modifier.width(220.dp),
-                onClick = onLogout,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray,
-                    contentColor = Color.White
+
+            Spacer(modifier = Modifier.height(1.dp))
+
+
+            OutlinedTextField(
+                label = {
+                    Text("E-mail", style = MaterialTheme.typography.labelMedium)
+                },
+                onValueChange = {},
+                readOnly = true,
+                value = user.email,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    unfocusedLabelColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = DarkBlue
                 )
-            ) {
-                Text("Sair")
-            }
+            )
         }
     }
 }

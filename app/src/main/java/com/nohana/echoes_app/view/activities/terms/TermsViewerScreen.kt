@@ -38,7 +38,7 @@ fun TermsViewerScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 2.dp, vertical = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // WebView ocupa toda a área disponível
@@ -49,6 +49,8 @@ fun TermsViewerScreen(
             factory = { context ->
                 WebView(context).apply {
                     webViewClient = WebViewClient()
+                    settings.useWideViewPort = true
+                    settings.loadWithOverviewMode = true
                     settings.javaScriptEnabled = false
                     isVerticalScrollBarEnabled = true
                     loadDataWithBaseURL(null, content, "text/html", "UTF-8", null)
