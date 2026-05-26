@@ -73,8 +73,8 @@ object NetworkProvider {
     }
 
     fun getAddress(): String {
-        return "http://10.131.109.139:8080/"
-        // return "https://echoes.avraham.dev.br/"
+        //return "http://10.131.109.139:8080/"
+        return "https://echoes.avraham.dev.br/"
     }
 
     fun getRetrofitInstance(path: String, context: Context): Retrofit {
