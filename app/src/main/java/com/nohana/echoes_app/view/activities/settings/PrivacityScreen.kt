@@ -80,18 +80,6 @@ fun PrivacityScreen(
                 onClick = onOpenTerms
             )
 
-            /* SettingsItem(
-                title = "Exportar Dados",
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = null,
-                        tint = DarkBlue
-                    )
-                },
-                onClick = onExportData
-            ) */
-
             SettingsItem(
                 title = "Revogar Termos",
                 icon = {

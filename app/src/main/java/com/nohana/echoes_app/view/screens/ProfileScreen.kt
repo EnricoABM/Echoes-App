@@ -50,7 +50,7 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ── Avatar ────────────────────────────────────────────────────────────
+
         Image(
             modifier = Modifier
                 .size(120.dp)
@@ -60,7 +60,6 @@ fun ProfileScreen(
             contentDescription = "Imagem de Perfil"
         )
 
-        // ── Dados do usuário ──────────────────────────────────────────────────
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)

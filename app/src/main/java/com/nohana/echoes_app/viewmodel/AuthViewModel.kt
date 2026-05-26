@@ -28,11 +28,9 @@ class AuthViewModel(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState = _authState.asStateFlow()
 
-    // Estado do formulário persistido separadamente
     private val _form = MutableStateFlow(AuthForm())
     val form = _form.asStateFlow()
 
-    // Atualiza os campos do formulário conforme o usuário digita
     fun onFormChange(
         email: String? = null,
         password: String? = null,
@@ -48,7 +46,6 @@ class AuthViewModel(
     }
 
     fun login(email: String, password: String) {
-        // Persiste os dados antes de qualquer validação
         _form.update { it.copy(email = email, password = password) }
 
         val emailError = FieldValidatorService.validateEmail(email)
@@ -84,7 +81,6 @@ class AuthViewModel(
     }
 
     fun sendTwoFactor(email: String, code: String) {
-        // Persiste o código antes de validar
         _form.update { it.copy(email = email, code = code) }
 
         val codeError = FieldValidatorService.validateCode(code)
