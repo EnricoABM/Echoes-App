@@ -20,7 +20,7 @@ interface TermsNetworkService {
      *
      * `GET /api/terms/{type}/json`
      *
-     * @param type Tipo do documento (ex.: "PRIVACY_POLICY").
+     * @param type Tipo do documento.
      * @return [TermsResponseDTO] com os dados do termo vigente.
      */
     @GET("/api/terms/{type}/json")

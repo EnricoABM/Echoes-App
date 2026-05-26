@@ -33,7 +33,6 @@ class UserViewModel(
     val event =
         _event.asSharedFlow()
 
-
     fun getUserInfo() {
         viewModelScope.launch {
             try {
@@ -53,7 +52,6 @@ class UserViewModel(
                         dto?.name ?: "",
                         dto?.email ?: ""
                     )
-
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -61,32 +59,26 @@ class UserViewModel(
                             error = null
                         )
                     }
-
                 } else {
-
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             error = "Erro ao carregar usuário"
                         )
                     }
-
                     _event.emit(
                         UserDeleteEvent.Error(
                             "Erro ao carregar usuário"
                         )
                     )
                 }
-
             } catch (e: IOException) {
-
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         error = "Erro de conexão"
                     )
                 }
-
                 _event.emit(
                     UserDeleteEvent.Error(
                         "Erro de conexão"
@@ -97,17 +89,14 @@ class UserViewModel(
     }
 
     fun deleteAccount(code: String) {
-
         viewModelScope.launch {
             try {
                 _uiState.update {
                     it.copy(isLoading = true)
                 }
-
                 val response = userNetworkService.deleteAccount(
                     UserDTO.ConfirmDeleteAccountRequest(code)
                 )
-
                 if (response.isSuccessful) {
                     tokenStorage.setToken("")
                     _event.emit(
@@ -128,7 +117,6 @@ class UserViewModel(
                         "Erro de conexão"
                     )
                 )
-
             } finally {
                 _uiState.update {
                     it.copy(isLoading = false)

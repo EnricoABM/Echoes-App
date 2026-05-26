@@ -13,7 +13,7 @@ class ChangePasswordViewModelFactory(
     private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val retrofit = NetworkProvider.Companion.getRetrofitInstance(baseUrl, context)
+        val retrofit = NetworkProvider.getRetrofitInstance(baseUrl, context)
         val service = retrofit.create(PasswordNetworkService::class.java)
         val tokenStorage = TokenStorage(context)
 

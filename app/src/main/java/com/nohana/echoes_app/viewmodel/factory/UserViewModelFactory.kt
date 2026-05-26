@@ -15,7 +15,7 @@ class UserViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-        val retrofit = NetworkProvider.Companion.getRetofitWithJwtInterceptor(baseUrl, context)
+        val retrofit = NetworkProvider.getRetofitWithJwtInterceptor(baseUrl, context)
         val service = retrofit.create(UserNetworkService::class.java)
         val tokenStorage = TokenStorage(context)
 

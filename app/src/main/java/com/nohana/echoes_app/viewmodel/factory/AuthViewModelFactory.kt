@@ -16,7 +16,7 @@ class AuthViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-        val retrofit = NetworkProvider.Companion.getRetrofitInstance(baseUrl, context)
+        val retrofit = NetworkProvider.getRetrofitInstance(baseUrl, context)
         val authService = retrofit.create(AuthNetworkService::class.java)
         val userService = retrofit.create(UserNetworkService::class.java)
         val tokenStorage = TokenStorage(context)

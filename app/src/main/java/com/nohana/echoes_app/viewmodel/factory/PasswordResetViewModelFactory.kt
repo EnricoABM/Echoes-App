@@ -14,7 +14,7 @@ class PasswordResetViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-        val retrofit = NetworkProvider.Companion.getRetrofitInstance(baseUrl, context)
+        val retrofit = NetworkProvider.getRetrofitInstance(baseUrl, context)
         val service = retrofit.create(PasswordNetworkService::class.java)
 
         return PasswordResetViewModel(service) as T

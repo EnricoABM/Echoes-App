@@ -131,7 +131,6 @@ class AuthViewModel(
     fun validateToken() {
         viewModelScope.launch {
             val token = tokenStorage.getToken() ?: ""
-            Log.d("TOKEN", token)
 
             if (token.isBlank()) {
                 _loginState.update { LoginState.Login }
@@ -167,7 +166,6 @@ class AuthViewModel(
             val token = tokenStorage.getToken() ?: ""
 
             if (token.isBlank()) {
-                Log.d("TOKEN ON LOGOUT", "NULL")
                 return@launch
             }
 
